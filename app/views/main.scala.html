@@ -1,5 +1,12 @@
 @(connected: Option[String])(content: Html)
 
+@import play.api.cache.Cache
+@import play.api.Play.current
+
+@getYouTubeId() = @{
+    Cache.getOrElse[String]("youtubeid") {""}
+}
+
 <!DOCTYPE html>
 
 <html>
@@ -16,7 +23,8 @@
             <div>
                 <div class="container">
                     <img class="" src="@routes.Assets.at("images/niptech.png")"></img>
-                    
+                   @if(getYouTubeId().trim != "") {
+
                     @connected.map { username =>
                         <p class="pull-right">
                             Ton pseudo @username —
@@ -28,6 +36,7 @@
                             <button class="btn btn-primary" type="submit">Connexion</button>
                         </form>
                     }
+                }
                     
                 </div>
             </div>

@@ -1,5 +1,12 @@
 @()(implicit flash: Flash)
 
+@import play.api.cache.Cache
+@import play.api.Play.current
+
+@getYouTubeId() = @{
+    Cache.getOrElse[String]("youtubeid") {""}
+}
+
 @main(None) {
     
     @flash.get("error").map { errorMessage =>
@@ -15,7 +22,13 @@
     <div class="alert-message block-message info">
         <p>
             <h1>Bienvenue sur le live Niptech</h1>
-            <h3>Pour entrer, choisis un pseudo et connecte toi avec le formulaires en haut à droite</h3>
+            @if(getYouTubeId() == "") {
+                <br/>
+                <h2><center>Il n'y a pas de live actuellement en cours de diffusion</center></h2>
+            } else {
+                <h2>On air : x utilisateurs connectés</h2>
+                <h3>Pour entrer, choisis un pseudo et connecte toi avec le formulaires en haut à droite</h3>
+            }
         </p>
     </div>
     

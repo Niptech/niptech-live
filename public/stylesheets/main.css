@@ -12,7 +12,7 @@ h1, h2, h3, h4, h5 {
     text-align: center; /* center align it with the container */
 }
 .container {
-    width: 820px; /* downsize our container to make the content feel a bit tighter and more cohesive. NOTE: this removes two full columns from the grid, meaning you only go to 14 columns and not 16. */
+    width: 1020px; /* downsize our container to make the content feel a bit tighter and more cohesive. NOTE: this removes two full columns from the grid, meaning you only go to 14 columns and not 16. */
 }
 
 /* The white background content wrapper */
@@ -63,12 +63,16 @@ h1, h2, h3, h4, h5 {
     display: none;
 }
 
+#onChat {
+    background-color: rgb(192, 211, 231);
+}
+
 #messages {
     position: absolute;
     bottom: 60px;
     overflow-y: scroll;
-    overflow-x: none; 
     max-height: 300px;
+    border-top: 1px solid #eee;
 }
 
 #talk {

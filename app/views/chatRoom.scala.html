@@ -26,17 +26,17 @@
                 src="http://www.youtube.com/embed/@getYouTubeId()" frameborder="0">
             </iframe>  
         </div>   
-        <div id="onChat" class="span6" style="height: 439px;">
-            <div style="border-bottom: 2px solid #eee;">
-                <h3 id="members-title" style="margin-top:-50px;">Membres connectés</h3>
-                <ul id="members">
-                </ul>
-            </div>
+        <div id="onChat" class="span6">
             <div id="main" style="height:350px;">
-                <div id="messages" style="border-top: 1px;">
+                <div id="messages">
                 </div>
                 <textarea id="talk"></textarea>
             </div>
+        </div>
+        <div class="span3" style="border-bottom: 2px solid #eee;">
+            <h3 id="members-title" style="margin-top:-35px;">Membres</h3>
+            <ul id="members">
+            </ul>
         </div>
     </div>
     
@@ -52,6 +52,11 @@
                     {text: $("#talk").val()}
                 ))
                 $("#talk").val('')
+            }
+
+            var addUrl = function(msg) {
+                var link =  "<a href='http://ici'>ici</a>"
+                return link + msg
             }
             
             var receiveEvent = function(event) {
@@ -70,7 +75,11 @@
                 // Create the message element
                 var el = $('<div class="message"><span></span><p></p></div>')
                 $("span", el).text(data.user)
-                $("p", el).text(data.message)
+                if (data.message.search("http://") == -1) {
+                    $("p", el).text(data.message)
+                } else {
+                    $("p", el).text(addUrl(data.message))
+                }
                 $(el).addClass(data.kind)
                 if(data.user == '@username') $(el).addClass('me')
                 $('#messages').append(el)
@@ -86,7 +95,7 @@
                 })
 
                 //Update the members number
-                $("#members-title").html(data.members.length + ' Membres connectés') 
+                $("#members-title").html(data.members.length + ' Membres') 
 
             }
             
