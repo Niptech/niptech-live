@@ -1,0 +1,51 @@
+@(connected: Option[String])(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Niptech Live</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        
+        <div class="topbar">
+            <div>
+                <div class="container">
+                    <img class="" src="@routes.Assets.at("images/niptech.png")"></img>
+                    
+                    @connected.map { username =>
+                        <p class="pull-right">
+                            Ton pseudo @username —
+                            <a href="@routes.Application.index()">Disconnect</a>
+                        </p>
+                    }.getOrElse {
+                        <form action="@routes.Application.chatRoom()" class="pull-right">
+                            <input id="username" name="username" class="input-small" type="text" placeholder="Username">
+                            <button class="btn btn-primary" type="submit">Connexion</button>
+                        </form>
+                    }
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div class="content">
+                @content
+            </div>
+
+            <footer>
+                <p>
+                    &copy; <a href="http://twitter.com/fXzo" target=_blank>fXzo</a>
+                </p>
+            </footer>
+
+        </div>
+        
+    </body>
+</html>

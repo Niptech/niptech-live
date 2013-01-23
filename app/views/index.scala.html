@@ -1,0 +1,22 @@
+@()(implicit flash: Flash)
+
+@main(None) {
+    
+    @flash.get("error").map { errorMessage =>
+        
+        <div class="alert-message error">
+            <p>
+                <strong>Oops!</strong> @errorMessage
+            </p>
+        </div>
+        
+    }
+        
+    <div class="alert-message block-message info">
+        <p>
+            <h1>Bienvenue sur le live Niptech</h1>
+            <h3>Pour entrer, choisis un pseudo et connecte toi avec le formulaires en haut à droite</h3>
+        </p>
+    </div>
+    
+}
