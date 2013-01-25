@@ -21,15 +21,27 @@
         
     <div class="alert-message block-message info">
         <p>
-            <h1>Bienvenue sur le live Niptech</h1>
             @if(getYouTubeId() == "") {
                 <br/>
                 <h2><center>Il n'y a pas de live actuellement en cours de diffusion</center></h2>
             } else {
-                <h2>On air : x utilisateurs connectés</h2>
-                <h3>Pour entrer, choisis un pseudo et connecte toi avec le formulaires en haut à droite</h3>
+                <div style="text-align:center;">
+                    <img src="@routes.Assets.at("images/live.png")"/>
+                    <h2>@ChatRoom.nbUsers utilisateurs connectés</h2>
+                </div>
             }
-        </p>
+         </p>
     </div>
+    @if(getYouTubeId() != "") {
+        <div style="text-align:center;">
+        <h3>Pour entrer, choisis un pseudo</h3>
+        <form action="@routes.Application.chatRoom()">
+            <input id="email" name="email" class="input-xxlarge" type="text" placeholder="email" style="font-size:200%; height: 50px;">
+            <br/>
+            <input id="username" name="username" class="input-xlarge" type="text" placeholder="Pseudo" style="font-size:200%; height: 50px;">
+            <button class="btn btn-primary" style="margin-top:-10px; font-size:200%; height: 55px;" type="submit">Connection</button>
+        </form>
+        </div>
+    }
     
 }
