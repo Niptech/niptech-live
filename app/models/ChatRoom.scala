@@ -53,8 +53,8 @@ object ChatRoom {
     roomActor
   }
 
-  def nbUsers: Int =  {
-    val f =  (default ? NbUsers()).map{
+  def nbUsers: Int = {
+    val f = (default ? NbUsers()).map {
       case n: Int => n
       case _ => 0
     }
@@ -95,6 +95,8 @@ object ChatRoom {
 }
 
 class ChatRoom extends Actor {
+  val urlExtr = """(((file|gopher|news|nntp|telnet|http|ftp|https|ftps|sftp)://)|(www\.))+(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(/[a-zA-Z0-9\&amp;%_\./-~-]*)?""".r
+
   val quotes = List(
     "A great person attracts great people and knows how to hold them together. Johann Wolfgang Von Goethe",
     "A man is but the product of his thoughts what he thinks, he becomes. Ghandi",
@@ -105,8 +107,7 @@ class ChatRoom extends Actor {
     "What the mind can conceive, the mind can achieve. Napoleon Hill",
     "Do not expect something for nothing. Be willing to give an equivalent value for all that you desire. Napoleon Hill",
     "It’s better to be king of your world, rather than a peasant in another man’s land. Satya Hanif",
-    "The future belongs to those who believe in the beauty of their dreams. Eleanor Roosevelt"
-    )
+    "The future belongs to those who believe in the beauty of their dreams. Eleanor Roosevelt")
 
   var members = Set.empty[String]
   val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
@@ -132,7 +133,7 @@ class ChatRoom extends Actor {
     }
 
     case SayQuote(username) => {
-      val quote = quotes(new Random(new java.util.Date().getTime()).nextInt(quotes.size-1))
+      val quote = quotes(new Random(new java.util.Date().getTime()).nextInt(quotes.size - 1))
       notifyAll("talk", username, quote)
     }
 
