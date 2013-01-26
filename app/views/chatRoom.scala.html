@@ -1,4 +1,4 @@
-@(username: String, email: Option[String])(implicit request: RequestHeader)
+@(username: String, email: String)(implicit request: RequestHeader)
 
 @import play.api.cache.Cache
 @import play.api.Play.current
@@ -9,20 +9,20 @@
     }
 
 @main(Some(username)) {
-    
+
     <div id="onError" class="alert-message error">
-        <p> 
+        <p>
             <strong>Oops!</strong> <span></span>
         </p>
     </div>
 
-    
+
     <div class="row">
         <div class="span6">
-            <iframe class="youtube-player" type="text/html"  width="100%" height="385" 
+            <iframe class="youtube-player" type="text/html"  width="100%" height="385"
                 src="http://www.youtube.com/embed/@getYouTubeId()" frameborder="0">
-            </iframe>  
-        </div>   
+            </iframe>
+        </div>
         <div id="onChat" class="span5">
             <div id="main" style="height:390px;">
                 <div id="messages">
@@ -36,28 +36,26 @@
             </ul>
         </div>
     </div>
-    
+
     <script type="text/javascript" charset="utf-8">
-    
+
         $(function() {
 
-            var gravatarHash = "@email.getOrElse("")"
-            
 			var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-            var chatSocket = new WS("@routes.Application.chat(username).webSocketURL()")
-            
+            var chatSocket = new WS("@routes.Application.chat(username, email).webSocketURL()")
+
             var sendMessage = function() {
                 chatSocket.send(JSON.stringify(
                     {text: $("#talk").val()}
                 ))
                 $("#talk").val('')
             }
-            
+
             var urlExt = new RegExp("(((file|gopher|news|nntp|telnet|http|ftp|https|ftps|sftp)://)|(www\.))+(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(/[a-zA-Z0-9\&amp;%_\./-~-]*)?", "g")
 
             var receiveEvent = function(event) {
                 var data = JSON.parse(event.data)
-                
+
                 // Handle errors
                 if(data.error) {
                     chatSocket.close()
@@ -67,9 +65,9 @@
                 } else {
                     $("#onChat").show()
                 }
-                
+
                 // Create the message element
-                var el = $('<div class="message"><img src="http://www.gravatar.com/avatar/' + gravatarHash + '?s=20"></img><span></span><br/></div>')
+                var el = $('<div class="message"><img src="http://www.gravatar.com/avatar/' + data.avatar + '?s=20"></img><span></span><br/></div>')
                 $("span", el).text(data.user)
                 $(el).append("<p>"+data.message.replace(urlExt, "<a href=\"$&\" target=_blank>$&</a>")+"</p>")
 
@@ -80,31 +78,31 @@
                 //Scroll to the bottom
                 var height = $('#messages')[0].scrollHeight;
                 $('#messages').scrollTop(height);
-                
+
                 // Update the members list
-                $("#members").html('') 
+                $("#members").html('')
                 $(data.members).each(function() {
                 $("#members").append('<li>' + this + '</li>')
                 })
 
                 //Update the members number
-                $("#members-title").html(data.members.length + ' Membres') 
+                $("#members-title").html(data.members.length + ' Membres')
 
             }
-            
+
             var handleReturnKey = function(e) {
                 if(e.charCode == 13 || e.keyCode == 13) {
                     e.preventDefault()
                     sendMessage()
-                } 
+                }
             }
-            
-            $("#talk").keypress(handleReturnKey)  
-            
+
+            $("#talk").keypress(handleReturnKey)
+
             chatSocket.onmessage = receiveEvent
-            
+
         })
-    
+
     </script>
-    
+
 }

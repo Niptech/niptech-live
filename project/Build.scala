@@ -9,6 +9,8 @@ object ApplicationBuild extends Build {
 
   val appDependencies = Seq(
     // Add your project dependencies here,
+    "org.twitter4j" % "twitter4j-core" % "3.0.3",
+    "org.twitter4j" % "twitter4j-stream" % "3.0.3",
     jdbc,
     anorm
   )

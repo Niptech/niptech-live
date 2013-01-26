@@ -5,7 +5,7 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /room                       controllers.Application.chatRoom(username: Option[String] ?= None, email: Option[String] ?= None)
-GET     /room/chat                  controllers.Application.chat(username)
+GET     /room/chat                  controllers.Application.chat(username, email)
 GET     /golive/:videoid            controllers.Application.goLive(videoid)
 GET     /stoplive		            controllers.Application.stopLive
 
