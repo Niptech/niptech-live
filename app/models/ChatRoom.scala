@@ -14,7 +14,6 @@ import akka.pattern.ask
 
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
-import java.security.MessageDigest
 
 object Robot {
 
@@ -25,7 +24,7 @@ object Robot {
 
     implicit val timeout = Timeout(1 second)
     // Make the robot join the room
-    chatRoom ? (Join("Syde Bot", "")) map {
+    chatRoom ? (Join("Syde Bot", "syde")) map {
       case Connected(robotChannel) =>
         // Apply this Enumerator on the logger.
         robotChannel |>> loggerIteratee
@@ -62,9 +61,9 @@ object ChatRoom {
     Await.result(f, 10 seconds)
   }
 
-  def join(username: String, email: String): scala.concurrent.Future[(Iteratee[JsValue, _], Enumerator[JsValue])] = {
+  def join(username: String, twitterId: String): scala.concurrent.Future[(Iteratee[JsValue, _], Enumerator[JsValue])] = {
 
-    (default ? Join(username, email)).map {
+    (default ? Join(username, twitterId)).map {
 
       case Connected(enumerator) =>
 
@@ -112,17 +111,17 @@ class ChatRoom extends Actor {
     "The future belongs to those who believe in the beauty of their dreams. Eleanor Roosevelt")
 
   var members = Set.empty[String]
-  var emails = Map.empty[String, String] withDefaultValue("")
+  var twitterIds = Map.empty[String, String] withDefaultValue ("http://www.gravatar.com/avatar/none?s=20")
   val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
 
   def receive = {
 
-    case Join(username, email) => {
+    case Join(username, twitterId) => {
       if (members.contains(username)) {
         sender ! CannotConnect("Ce pseudo est déjà utilisé")
       } else {
         members = members + username
-        emails += username -> email
+        twitterIds += username -> TwitterClient.getUserImageUrl(twitterId)
         sender ! Connected(chatEnumerator)
         self ! NotifyJoin(username)
       }
@@ -143,7 +142,7 @@ class ChatRoom extends Actor {
 
     case Quit(username) => {
       members = members - username
-      emails -= username
+      twitterIds -= username
       notifyAll("quit", username, "a quitté la ChatRoom")
     }
 
@@ -156,28 +155,14 @@ class ChatRoom extends Actor {
       Seq(
         "kind" -> JsString(kind),
         "user" -> JsString(user),
-        "avatar" -> JsString(md5SumString(emails(user))),
+        "avatar" -> JsString(twitterIds(user)),
         "message" -> JsString(text),
-        "members" -> JsArray(
-          members.toList.map(JsString))))
+        "members" -> JsArray(members.toList.map(JsString))))
     chatChannel.push(msg)
-  }
-
-  private def md5SumString(msg: String): String = {
-    val bytes = msg.getBytes
-    val md5 = MessageDigest.getInstance("MD5")
-    md5.reset()
-    md5.update(bytes)
-
-    md5.digest().map(0xFF & _).map {
-      "%02x".format(_)
-    }.foldLeft("") {
-      _ + _
-    }
   }
 }
 
-case class Join(username: String, email: String)
+case class Join(username: String, twitterId: String)
 
 case class Quit(username: String)
 
@@ -192,3 +177,5 @@ case class NbUsers()
 case class Connected(enumerator: Enumerator[JsValue])
 
 case class CannotConnect(msg: String)
+
+

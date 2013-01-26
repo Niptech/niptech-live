@@ -27,16 +27,17 @@
             } else {
                 <div style="text-align:center;">
                     <img src="@routes.Assets.at("images/live.png")"/>
-                    <h2>@ChatRoom.nbUsers utilisateurs connectés</h2>
+                    <h2>@ChatRoom.nbUsers utilisateur(s) connectés</h2>
                 </div>
             }
          </p>
     </div>
     @if(getYouTubeId() != "") {
         <div style="text-align:center;">
-        <h3>Pour entrer, choisis un pseudo</h3>
+        <h3>Pour entrer, choisis un pseudo et saisis ton Id twitter pour voir ton avatar</h3>
+        <br/>
         <form action="@routes.Application.chatRoom()">
-            <input id="email" name="email" class="input-xxlarge" type="text" placeholder="email" style="font-size:200%; height: 50px;">
+            <em style="font-size:300%; height: 50px;">@@</em><input id="twitterId" name="twitterId" class="input-xlarge" type="text" placeholder="Twitter id" style="font-size:200%; height: 50px;">
             <br/>
             <input id="username" name="username" class="input-xlarge" type="text" placeholder="Pseudo" style="font-size:200%; height: 50px;">
             <button class="btn btn-primary" style="margin-top:-10px; font-size:200%; height: 55px;" type="submit">Connection</button>

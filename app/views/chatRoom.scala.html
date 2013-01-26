@@ -1,4 +1,4 @@
-@(username: String, email: String)(implicit request: RequestHeader)
+@(username: String, twitterId: String)(implicit request: RequestHeader)
 
 @import play.api.cache.Cache
 @import play.api.Play.current
@@ -42,7 +42,7 @@
         $(function() {
 
 			var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-            var chatSocket = new WS("@routes.Application.chat(username, email).webSocketURL()")
+            var chatSocket = new WS("@routes.Application.chat(username, twitterId).webSocketURL()")
 
             var sendMessage = function() {
                 chatSocket.send(JSON.stringify(
@@ -67,7 +67,7 @@
                 }
 
                 // Create the message element
-                var el = $('<div class="message"><img src="http://www.gravatar.com/avatar/' + data.avatar + '?s=20"></img><span></span><br/></div>')
+                var el = $('<div class="message"><span></span><img src="' + data.avatar + '" class="pull-right" style="margin-right: 10px;"></img><br/></div>')
                 $("span", el).text(data.user)
                 $(el).append("<p>"+data.message.replace(urlExt, "<a href=\"$&\" target=_blank>$&</a>")+"</p>")
 
