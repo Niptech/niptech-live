@@ -1,7 +1,6 @@
 package models
 
-import twitter4j.TwitterFactory
-import twitter4j.Twitter
+import twitter4j.{TwitterStreamFactory, TwitterFactory, Twitter}
 import twitter4j.conf.ConfigurationBuilder
 
 /**
@@ -15,7 +14,7 @@ object TwitterClient {
 
   val defaultImageUrl = "http://www.gravatar.com/avatar/none?s=20"
 
-  val twitter = {
+  val configuration = {
     val cb = new ConfigurationBuilder()
 
     cb.setDebugEnabled(true)
@@ -24,8 +23,16 @@ object TwitterClient {
       .setOAuthAccessToken("1121664438-NvyGMZDkpbcDqon4VD91VMBA0FoJyql3ivP8T93")
       .setOAuthAccessTokenSecret("gdj7U0lePdGA1pB1TZNsfqoyvkAUCN7AqMkYUs9kpec")
 
-    val tf = new TwitterFactory(cb.build())
-    tf.getInstance()
+    cb.build
+
+  }
+
+  val twitter = {
+    new TwitterFactory(configuration).getInstance()
+  }
+
+  val twitterStream = {
+    new TwitterStreamFactory(configuration).getInstance()
   }
 
   def getUserImageUrl(user: String) = try {twitter.showUser(user).getMiniProfileImageURL} catch {case exc => defaultImageUrl}

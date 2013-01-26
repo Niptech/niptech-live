@@ -30,6 +30,16 @@ object Application extends Controller {
     Ok(views.html.msg("Niptech live connecté sur l'id YouTube : " + videoId))
   }
 
+  def twitterBroadcastOn = Action {
+    Cache.set("twitterBroadcast", true)
+    Ok(views.html.msg("Live Broadcast sur twitter activé"))
+  }
+
+  def twitterBroadcastOff = Action {
+    Cache.set("twitterBroadcast", false)
+    Ok(views.html.msg("Live Broadcast sur twitter désactivé"))
+  }
+
   def stopLive() = Action {
     Cache.set("youtubeid", "")
     Ok(views.html.msg("Niptech live déconnecté"))

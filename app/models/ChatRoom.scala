@@ -5,6 +5,8 @@ import scala.concurrent.duration._
 import scala.concurrent._
 import scala.util.Random
 import play.api._
+
+import cache.Cache
 import play.api.libs.json._
 import play.api.libs.iteratee._
 import play.api.libs.concurrent._
@@ -14,6 +16,8 @@ import akka.pattern.ask
 
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
+import twitter4j._
+
 
 object Robot {
 
@@ -50,7 +54,48 @@ object ChatRoom {
     // Create a bot user (just for fun)
     Robot(roomActor)
 
+    initTwitterListener(roomActor)
+
     roomActor
+  }
+
+  def initTwitterListener(chatRoom: ActorRef) = {
+
+    chatRoom ? (Join("Twitter", "niptechlive"))
+
+    val twitterStream = TwitterClient.twitterStream
+
+    val listener = new StatusListener() {
+      @Override
+      def onStatus(st: Status) = chatRoom ? Tweet(st)
+
+      @Override
+      def onDeletionNotice(st: StatusDeletionNotice) = {
+        System.out.println("Got a status deletion notice id:" + st.getStatusId())
+      }
+
+      @Override
+      def onTrackLimitationNotice(numberOfLimitedStatuses: Int) = {
+        System.out.println("Got track limitation notice:" + numberOfLimitedStatuses)
+      }
+
+      @Override
+      def onScrubGeo(userId: Long, upToStatusId: Long) = {
+        System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId)
+      }
+
+      @Override
+      def onStallWarning(warning: StallWarning) {
+        System.out.println("Got stall warning:" + warning);
+      }
+
+      @Override
+      def onException(ex: Exception) {
+        ex.printStackTrace()
+      }
+    }
+    twitterStream.addListener(listener)
+    twitterStream.filter(new FilterQuery(0, Array[Long](), Array[String]("niptechlive")));
   }
 
   def nbUsers: Int = {
@@ -133,6 +178,13 @@ class ChatRoom extends Actor {
 
     case Talk(username, text) => {
       notifyAll("talk", username, text)
+      if (Cache.getOrElse[Boolean]("twitterBroadcast") {false})
+        try {TwitterClient.twitter.updateStatus(text)}
+          catch {case exc => Logger.error(exc.getMessage)}
+    }
+
+    case Tweet(status) => {
+      notifyAll("talk", "Twitter", "@" + status.getUser().getScreenName() + " - " + status.getText())
     }
 
     case SayQuote(username) => {
@@ -167,6 +219,8 @@ case class Join(username: String, twitterId: String)
 case class Quit(username: String)
 
 case class Talk(username: String, text: String)
+
+case class Tweet(status: Status)
 
 case class NotifyJoin(username: String)
 
