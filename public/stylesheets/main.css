@@ -57,7 +57,7 @@ h1, h2, h3, h4, h5 {
     overflow: hidden;
 }
 
-#onError, #onChat {
+#onError {
     display: none;
 }
 

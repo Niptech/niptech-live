@@ -179,7 +179,7 @@ class ChatRoom extends Actor {
     case Talk(username, text) => {
       notifyAll("talk", username, text)
       if (Cache.getOrElse[Boolean]("twitterBroadcast") {false})
-        try {TwitterClient.twitter.updateStatus(text)}
+        try {TwitterClient.twitter.updateStatus((username + " - " + text).take(140))}
           catch {case exc => Logger.error(exc.getMessage)}
     }
 

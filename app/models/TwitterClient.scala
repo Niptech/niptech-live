@@ -20,8 +20,8 @@ object TwitterClient {
     cb.setDebugEnabled(true)
       .setOAuthConsumerKey("caUDPvFcgbWBgkV4TbzUkw")
       .setOAuthConsumerSecret("LJDnxYJmaCh7NL6FsZnAR1S35djb0bIvaUcV4OeHM")
-      .setOAuthAccessToken("1121664438-NvyGMZDkpbcDqon4VD91VMBA0FoJyql3ivP8T93")
-      .setOAuthAccessTokenSecret("gdj7U0lePdGA1pB1TZNsfqoyvkAUCN7AqMkYUs9kpec")
+      .setOAuthAccessToken("1121664438-BvK5CS1J0srawyFHbVfFH6AVJW0qabw1XCYzZxK")
+      .setOAuthAccessTokenSecret("lyhiQEJBJw6vEhatectwXmXcSizotGmtZcvJqLw97A4")
 
     cb.build
 
