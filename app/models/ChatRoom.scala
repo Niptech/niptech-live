@@ -48,8 +48,10 @@ object ChatRoom {
 
   implicit val timeout = Timeout(1 second)
 
-  lazy val default = {
-    val roomActor = Akka.system.actorOf(Props[ChatRoom])
+  def initialize = {
+    val roomActor = Akka.system.actorOf(Props[ChatRoom], "chatroom")
+
+    Logger.info("roomactor path :" + roomActor.path.toString)
 
     // Create a bot user (just for fun)
     Robot(roomActor)
@@ -58,6 +60,8 @@ object ChatRoom {
 
     roomActor
   }
+
+  def default = Akka.system.actorFor("/user/chatroom")
 
   def initTwitterListener(chatRoom: ActorRef) = {
 

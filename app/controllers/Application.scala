@@ -46,13 +46,16 @@ object Application extends Controller {
    */
   def chatRoom(username: Option[String], email: Option[String]) = Action {
     implicit request =>
-      username.filterNot(_.isEmpty).map {
-        username =>
-          Ok(views.html.chatRoom(username, email.getOrElse("")))
-      }.getOrElse {
-        Redirect(routes.Application.index).flashing(
-          "error" -> "Please choose a valid username.")
-      }
+      if (Cache.getOrElse[String]("youtubeid")("") == "")
+        Redirect("/")
+      else
+        username.filterNot(_.isEmpty).map {
+          username =>
+            Ok(views.html.chatRoom(username, email.getOrElse("")))
+        }.getOrElse {
+          Redirect(routes.Application.index).flashing(
+            "error" -> "Please choose a valid username.")
+        }
   }
 
   /**
