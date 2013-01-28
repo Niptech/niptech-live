@@ -1,6 +1,6 @@
 package controllers
 
-import play.api._
+import play.api.libs.concurrent._
 import play.api.mvc._
 
 import play.api.libs.json._
@@ -12,7 +12,7 @@ import models._
 
 import akka.actor._
 import scala.concurrent.duration._
-import java.security.MessageDigest
+
 
 
 object Application extends Controller {
@@ -28,6 +28,12 @@ object Application extends Controller {
   def admin = Action {
     implicit request =>
       Ok(views.html.admin())
+  }
+
+  def initChatRoom = Action {
+    Akka.system.stop(ChatRoom.default)
+    ChatRoom.initialize
+    Ok(views.html.msg("ChatRoom réinitialisée"))
   }
 
   def configure(onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
