@@ -1,0 +1,82 @@
+@()
+
+@import play.api.cache.Cache
+@import play.api.Play.current
+
+@getYouTubeId() = @{
+    Cache.getOrElse[String]("youtubeid") {
+        ""
+    }
+}
+
+@getYouTubeIdDisplay() = @{
+    if (getYouTubeId() == "")
+        ("none", "unchecked")
+    else
+        ("block", "checked")
+}
+
+@getTwitterStreamStatus() = @{
+    if (Cache.getOrElse[Boolean]("twitterBroadcast") {false})
+        "checked"
+    else
+        "unchecked"
+}
+
+
+@main(None) {
+
+    <h1>Administration de la Chat Room Niptech</h1>
+    <br/>
+    <br/>
+    <div>
+        <form action="@routes.Application.configure()">
+            <div class="control-group" style="height: 63px;">
+                <div class="onairswitch"  style="float: left;">
+                    <input type="checkbox" name="onairswitch" class="onairswitch-checkbox" id="myonairswitch" @getYouTubeIdDisplay()._2 style="display: none;"
+                        onchange="toggleYoutubeId(this)">
+                    <label class="onairswitch-label" for="myonairswitch">
+                        <div class="onairswitch-inner"></div>
+                        <div class="onairswitch-switch"></div>
+                    </label>
+                </div>
+                <input type="text" name="youtubeid" id="youtubeid" placeholder="Youtube Id" class="youtubeid-input"
+                  style="display: @getYouTubeIdDisplay()._1;
+                      margin-left: 10px;
+                      margin-top: 3px;
+                      width: 300px;
+                      height: 40px;
+                      font-size: 23px;
+                      font-family: Trebuchet, Arial, sans-serif;
+                      font-weight: bold;"
+                  value="@getYouTubeId()">
+            </div>
+            <div class="twitterstreamswitch">
+                <input type="checkbox" name="twitterstreamswitch" class="twitterstreamswitch-checkbox" id="mytwitterstreamswitch" @getTwitterStreamStatus() style="display: none;">
+                <label class="twitterstreamswitch-label" for="mytwitterstreamswitch">
+                    <div class="twitterstreamswitch-inner"></div>
+                    <div class="twitterstreamswitch-switch"></div>
+                </label>
+            </div>
+            <div class="control-group">
+                <div class="controls" style="margin-left: 0px;">
+                    <button type="submit" class="btn btn-primary"
+                        style="margin-top: 20px; height: 45px; font-size: 23px;"
+                    >Appliquer</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript" charset="utf-8">
+        function toggleYoutubeId(element) {
+            if ($('#myonairswitch').is(':checked')) {
+               $('#youtubeid').fadeIn(1000);
+            } else {
+               $('#youtubeid').fadeOut(1000);
+               $('#youtubeid').val('')
+            }
+        }
+    </script>
+}
+

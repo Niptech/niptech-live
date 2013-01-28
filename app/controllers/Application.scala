@@ -25,24 +25,20 @@ object Application extends Controller {
       Ok(views.html.index())
   }
 
-  def goLive(videoId: String) = Action {
-    Cache.set("youtubeid", videoId)
-    Ok(views.html.msg("Niptech live connecté sur l'id YouTube : " + videoId))
+  def admin = Action {
+    implicit request =>
+      Ok(views.html.admin())
   }
 
-  def twitterBroadcastOn = Action {
-    Cache.set("twitterBroadcast", true)
-    Ok(views.html.msg("Live Broadcast sur twitter activé"))
-  }
-
-  def twitterBroadcastOff = Action {
-    Cache.set("twitterBroadcast", false)
-    Ok(views.html.msg("Live Broadcast sur twitter désactivé"))
-  }
-
-  def stopLive() = Action {
-    Cache.set("youtubeid", "")
-    Ok(views.html.msg("Niptech live déconnecté"))
+  def configure(onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
+    youtubeid foreach {
+      id => Cache.set("youtubeid", id)
+    }
+    if (twitterstreamswitch.getOrElse("off") == "on")
+      Cache.set("twitterBroadcast", true)
+    else
+      Cache.set("twitterBroadcast", false)
+    Redirect("/")
   }
 
   /**
@@ -66,7 +62,6 @@ object Application extends Controller {
     request =>
       ChatRoom.join(username, email)
   }
-
 
 
 }

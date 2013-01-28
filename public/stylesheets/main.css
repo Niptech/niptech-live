@@ -114,3 +114,106 @@ h1, h2, h3, h4, h5 {
 .message.join, .message.quit {
     background: #D9E7FB;
 }
+
+/* On Air Radio buttons */
+/************************/
+
+.onairswitch {
+    position: relative; width: 152px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onairswitch-checkbox {
+    display: none;
+}
+.onairswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 50px;
+}
+.onairswitch-inner {
+    width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+.onairswitch-inner:before, .onairswitch-inner:after {
+    float: left; width: 50%; height: 50px; padding: 0; line-height: 50px;
+    font-size: 23px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+.onairswitch-inner:before {
+    content: "ON AIR";
+    padding-left: 10px;
+    background-color: #68E696; color: #FFFFFF;
+}
+.onairswitch-inner:after {
+    content: "OFF AIR";
+    padding-right: 10px;
+    background-color: #ED3737; color: #FFFFFF;
+    text-align: right;
+}
+.onairswitch-switch {
+    width: 18px; margin: 16px;
+    height: 18px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 50px;
+    position: absolute; top: 0; bottom: 0; right: 98px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
+}
+.onairswitch-checkbox:checked + .onairswitch-label .onairswitch-inner {
+    margin-left: 0;
+}
+.onairswitch-checkbox:checked + .onairswitch-label .onairswitch-switch {
+    right: 0px;
+}
+
+
+/* Twitter Stream Radio buttons */
+/************************/
+
+.twitterstreamswitch {
+    position: relative; width: 320px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.twitterstreamswitch-checkbox {
+    display: none;
+}
+.twitterstreamswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 50px;
+}
+.twitterstreamswitch-inner {
+    width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+.twitterstreamswitch-inner:before, .twitterstreamswitch-inner:after {
+    float: left; width: 50%; height: 50px; padding: 0; line-height: 50px;
+    font-size: 23px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+.twitterstreamswitch-inner:before {
+    content: "TWITTER STREAM ON";
+    padding-left: 10px;
+    background-color: #68E696; color: #FFFFFF;
+}
+.twitterstreamswitch-inner:after {
+    content: "TWITTER STREAM OFF";
+    padding-right: 10px;
+    background-color: #ED3737; color: #FFFFFF;
+    text-align: right;
+}
+.twitterstreamswitch-switch {
+    width: 18px; margin: 16px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 50px;
+    position: absolute; top: 0; bottom: 0; right: 269px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
+}
+.twitterstreamswitch-checkbox:checked + .twitterstreamswitch-label .twitterstreamswitch-inner {
+    margin-left: 0;
+}
+.twitterstreamswitch-checkbox:checked + .twitterstreamswitch-label .twitterstreamswitch-switch {
+    right: 0px;
+}
+

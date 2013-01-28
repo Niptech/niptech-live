@@ -6,10 +6,9 @@
 GET     /                           controllers.Application.index
 GET     /room                       controllers.Application.chatRoom(username: Option[String] ?= None, twitterId: Option[String] ?= None)
 GET     /room/chat                  controllers.Application.chat(username, twitterId)
-GET     /golive/:videoid            controllers.Application.goLive(videoid)
-GET     /stoplive		            controllers.Application.stopLive
-GET     /twitterBroadcastOn         controllers.Application.twitterBroadcastOn
-GET     /twitterBroadcastOff         controllers.Application.twitterBroadcastOff
+
+GET     /admin                      controllers.Application.admin
+GET     /configure                  controllers.Application.configure(onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

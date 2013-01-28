@@ -3,10 +3,13 @@ Application Live Chat pour NipTech
 
 Cette application gère un chat live ainsi que la diffusion d'un flux youtube sur la même page.
 
-Il est possible de :
-* Connecter un nouvel utilisateur
-* Indiquer le flux YouTube à diffuser : http://live.niptech.com/golive/ID_YOUTUBE
-* Arrêter la diffusion d'un flux : http://live.niptech.com/stoplive
+ADMINISTRATION
+--------------
+L'administration consiste à indiquer l'id du flux youtube à diffuser et à activer ou désactiver le live stream Twwitter.
+La page d'administration n'est pas sécurisée et est accessible à http://live.niptech.com/admin
+* Pour démarrer le chat, cliquer sur le bouton rouge "Off Air" et indiquer l'id du flux youtube
+* L'activation/désactivation du twitter live stream se fait via le bouton éponyme.
+* Pour appliquer les modifications, cliquer sur **Appliquer**
 
 TWITTER LIVESTREAM
 ------------------
