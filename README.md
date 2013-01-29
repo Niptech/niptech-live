@@ -17,6 +17,11 @@ Le Twitter LiveStream permet aux utilisateurs du chat d'interagir avec Twitter :
 * Si la fonctionnalité est activée par Ben, tous les messages du live peuvent être diffusés en temps réel sur Twitter. Ils sont postés par l'utilisateur @niptechlive.
 * Un utilisateur qui se connecte au live a la possibilité d'indiquer son nom d'utilisateur twitter. Son avatar twitter s'affiche dans la chat room.
 
+##TODO
+* Ajouter l'heure et minute sur chaque message
+* Corriger le bug de décalalge de l'affichage des messages
+* Empêcher l'injection html
+
 ## Licensing
 <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.fr"><img alt="Licence Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Niptech Chat Room</span> de <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Fabrice Croiseaux</span> est mis à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.fr">licence Creative Commons Attribution 3.0 non transposé</a>.
 

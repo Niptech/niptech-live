@@ -1,7 +1,11 @@
 package models
 
+import play.api.Play.configuration
+import play.api.Play.current
+
 import twitter4j.{TwitterStreamFactory, TwitterFactory, Twitter}
 import twitter4j.conf.ConfigurationBuilder
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,25 +18,25 @@ object TwitterClient {
 
   val defaultImageUrl = "http://www.gravatar.com/avatar/none?s=20"
 
-  val configuration = {
+  val twitterConfiguration = {
     val cb = new ConfigurationBuilder()
 
     cb.setDebugEnabled(true)
-      .setOAuthConsumerKey("caUDPvFcgbWBgkV4TbzUkw")
-      .setOAuthConsumerSecret("LJDnxYJmaCh7NL6FsZnAR1S35djb0bIvaUcV4OeHM")
-      .setOAuthAccessToken("1121664438-BvK5CS1J0srawyFHbVfFH6AVJW0qabw1XCYzZxK")
-      .setOAuthAccessTokenSecret("lyhiQEJBJw6vEhatectwXmXcSizotGmtZcvJqLw97A4")
+      .setOAuthConsumerKey(configuration.getString("twitter.ConsumerKey").get)
+      .setOAuthConsumerSecret(configuration.getString("twitter.ConsumerSecret").get)
+      .setOAuthAccessToken(configuration.getString("twitter.AccessToken").get)
+      .setOAuthAccessTokenSecret(configuration.getString("twitter.AccessTokenSecret").get)
 
     cb.build
 
   }
 
   val twitter = {
-    new TwitterFactory(configuration).getInstance()
+    new TwitterFactory(twitterConfiguration).getInstance()
   }
 
   val twitterStream = {
-    new TwitterStreamFactory(configuration).getInstance()
+    new TwitterStreamFactory(twitterConfiguration).getInstance()
   }
 
   def getUserImageUrl(user: String) = try {twitter.showUser(user).getMiniProfileImageURL} catch {case exc => defaultImageUrl}

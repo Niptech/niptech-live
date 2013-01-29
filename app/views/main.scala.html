@@ -23,7 +23,7 @@
         <div class="topbar">
             <div>
                 <div class="container">
-                    <img class="" src="@routes.Assets.at("images/niptech.png")"></img>
+                    <img class="" style="margin-left:50px;" src="@routes.Assets.at("images/niptech.png")"></img>
                    @if(getYouTubeId().trim != "") {
 
                     @connected.map { username =>
@@ -38,17 +38,13 @@
             </div>
         </div>
 
+        <a target="_blank" href="https://github.com/Niptech/niptech-live"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png" alt="Fork me on GitHub"></a>
+
         <div class="container">
 
             <div class="content" style="border-top: 1px solid;">
                 @content
             </div>
-
-            <footer>
-                <p>
-                    &copy; <a href="http://twitter.com/fXzo" target=_blank>fXzo</a>
-                </p>
-            </footer>
 
         </div>
         
