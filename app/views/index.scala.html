@@ -44,5 +44,19 @@
         </form>
         </div>
     }
-    
+
+    <script type="text/javascript" charset="utf-8">
+
+    $(function() {
+        $("#username").change(function(e) {
+            if($("#username").val().indexOf("<") != -1) {
+              alert("Si tu veux programmer en HTML, aide nous plutôt à faire évoluer le chat")
+              $("#username").val('')
+            }
+        })
+
+    })
+
+    </script>
+
 }

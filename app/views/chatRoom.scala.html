@@ -22,15 +22,15 @@
                 src="http://www.youtube.com/embed/@getYouTubeId()" frameborder="0">
             </iframe>
         </div>
-        <div id="onChat" class="span5">
+        <div id="onChat" class="span5" style="margin-left: 10px;">
             <div id="main" style="height:390px;">
                 <div id="messages">
                 </div>
-                <textarea id="talk" style="width: 380px;"></textarea>
+                <textarea id="talk" style="width: 360px;"></textarea>
             </div>
         </div>
-        <div class="span2" style="border-bottom: 2px solid #eee;">
-            <h3 id="members-title" style="margin-top:0px;">Membres</h3>
+        <div class="span2" style="border-bottom: 2px solid #aaa; margin-left: 10px;">
+            <h4 id="members-title" style="margin-top:0px;">Membres</h4>
             <ul id="members">
             </ul>
         </div>
@@ -71,8 +71,14 @@
                 }
 
                 // Create the message element
-                var el = $('<div class="message"><span></span><img src="' + data.avatar + '" class="pull-right" style="margin-right: 10px;"></img><br/></div>')
+                var el = $('<div class="message"><span></span><em style="font-size:10px; color:#aaa"></em><img src="' + data.avatar + '" class="pull-right" style="margin-right: 10px;"></img><br/></div>')
                 $("span", el).text(data.user)
+                var now = new Date()
+                var min = now.getMinutes() + ""
+                if (min.length == 1) {
+                    min = "0" + min
+                }
+                $("em", el).text(now.getHours() + ':' + min)
                 $(el).append("<p>"+data.message.replace(urlExt, "<a href=\"$&\" target=_blank>$&</a>")+"</p>")
 
                 $(el).addClass(data.kind)

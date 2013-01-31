@@ -63,6 +63,7 @@ h1, h2, h3, h4, h5 {
 
 #onChat {
     background-color: rgb(192, 211, 231);
+    border: 1px solid #808080;
 }
 
 #messages {
@@ -105,6 +106,7 @@ h1, h2, h3, h4, h5 {
     display: inline-block;
     margin: 0;
     width: 380px;
+    margin-left: 5px;
 }
 
 .message.me {

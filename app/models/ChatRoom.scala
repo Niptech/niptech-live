@@ -36,8 +36,8 @@ object Robot {
 
     // Make the robot talk every 30 seconds
     Akka.system.scheduler.schedule(
-      3 minutes,
-      3 minutes,
+      5 minutes,
+      5 minutes,
       chatRoom,
       SayQuote("Syde Bot"))
   }
@@ -177,7 +177,7 @@ class ChatRoom extends Actor {
     }
 
     case NotifyJoin(username) => {
-      notifyAll("join", username, "vient d'entrer dans la ChatRoom")
+      // notifyAll("join", username, "vient d'entrer dans la ChatRoom")
     }
 
     case Talk(username, text) => {
@@ -199,7 +199,7 @@ class ChatRoom extends Actor {
     case Quit(username) => {
       members = members - username
       twitterIds -= username
-      notifyAll("quit", username, "a quitté la ChatRoom")
+      // notifyAll("quit", username, "a quitté la ChatRoom")
     }
 
     case NbUsers() => sender ! members.size
