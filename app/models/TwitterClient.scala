@@ -35,10 +35,20 @@ object TwitterClient {
     new TwitterFactory(twitterConfiguration).getInstance()
   }
 
+  def newInstance = {
+    val tw = new TwitterFactory().getInstance()
+    tw.setOAuthConsumer(configuration.getString("twitter.ConsumerKey").get, configuration.getString("twitter.ConsumerSecret").get)
+    tw
+  }
+
   val twitterStream = {
     new TwitterStreamFactory(twitterConfiguration).getInstance()
   }
 
-  def getUserImageUrl(user: String) = try {twitter.showUser(user).getMiniProfileImageURL} catch {case exc => defaultImageUrl}
+  def getUserImageUrl(user: String) = try {
+    twitter.showUser(user).getMiniProfileImageURL
+  } catch {
+    case exc => defaultImageUrl
+  }
 
 }

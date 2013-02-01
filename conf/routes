@@ -5,7 +5,9 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /room                       controllers.Application.chatRoom(username: Option[String] ?= None, twitterId: Option[String] ?= None)
+GET     /twitterLogin               controllers.Application.twitterLogin(username: Option[String] ?= None, twitterId: Option[String] ?= None)
 GET     /room/chat                  controllers.Application.chat(username, twitterId)
+GET     /callback                   controllers.Application.callback(oauth_token: String, oauth_verifier: String)
 
 GET     /admin                      controllers.Application.admin
 GET     /configure                  controllers.Application.configure(onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None)

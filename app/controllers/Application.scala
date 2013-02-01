@@ -12,8 +12,13 @@ import models._
 
 import akka.actor._
 import scala.concurrent.duration._
+import twitter4j.{Twitter, TwitterFactory}
+import twitter4j.auth.RequestToken
+import scala.util.Random
+import play.api.Logger
 
 
+case class TwitterStore(twitter: Twitter, requestToken: RequestToken)
 
 object Application extends Controller {
 
@@ -62,6 +67,30 @@ object Application extends Controller {
           Redirect(routes.Application.index).flashing(
             "error" -> "Please choose a valid username.")
         }
+  }
+
+  def twitterLogin(username: Option[String], email: Option[String]) = Action {
+    implicit request =>
+      val twitter = TwitterClient.newInstance
+      val id = new Random(new java.util.Date().getTime()).nextLong().abs.toString
+      val requestToken = twitter.getOAuthRequestToken("http://live.niptech.com/callback")
+      Cache.set(id, TwitterStore(twitter, requestToken))
+      Redirect(requestToken.getAuthenticationURL) withSession (session + ("niptid" -> id))
+  }
+
+  def callback(oauth_token: String, oauth_verifier: String) = Action {
+    implicit request =>
+      session.get("niptid").map {
+        id =>
+          Cache.get(id).map {
+            storeRef  =>
+              val store = storeRef.asInstanceOf[TwitterStore]
+              store.twitter.getOAuthAccessToken(store.requestToken, oauth_verifier)
+              val username = store.twitter.getScreenName
+              Cache.remove(id)
+              Redirect(routes.Application.chatRoom(Some(username), Some(username))) withNewSession
+          } getOrElse (Unauthorized("TwitterStore NotFound") withNewSession)
+      } getOrElse (Unauthorized("No session id retrieved") withNewSession)
   }
 
   /**
