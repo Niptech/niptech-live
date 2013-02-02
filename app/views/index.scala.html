@@ -34,11 +34,12 @@
     </div>
     @if(getYouTubeId() != "") {
         <div style="text-align:center;">
-        <h3>Pour entrer, choisis un pseudo et saisis ton Id twitter pour voir ton avatar</h3>
-        <br/>
-        <form action="@routes.Application.twitterLogin()">
-            <em style="font-size:300%; height: 50px;">@@</em><input id="twitterId" name="twitterId" class="input-xlarge" type="text" placeholder="Twitter id" style="font-size:200%; height: 50px;">
+            <a href="@routes.Application.twitterLogin()" class="btn btn-large btn-primary" style="font-size:200%; width: 200px; line-height: 35px;">Connecte toi avec Twitter</a>
             <br/>
+            <br/>
+            <h3>Ou choisis un pseudo</h3>
+        <form action="@routes.Application.chatRoom()">
+            <input id="twitterId" name="twitterId" class="input-xlarge" type="text" placeholder="Twitter id" style="display: none;">
             <input id="username" name="username" class="input-xlarge" type="text" placeholder="Pseudo" style="font-size:200%; height: 50px;">
             <button class="btn btn-primary" style="margin-top:-10px; font-size:200%; height: 55px;" type="submit">Connection</button>
         </form>

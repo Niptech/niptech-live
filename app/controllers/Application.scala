@@ -88,7 +88,7 @@ object Application extends Controller {
               store.twitter.getOAuthAccessToken(store.requestToken, oauth_verifier)
               val username = store.twitter.getScreenName
               Cache.remove(id)
-              Redirect(routes.Application.chatRoom(Some(username), Some(username))) withNewSession
+              Redirect(routes.Application.chatRoom(Some("@"+username), Some(username))) withNewSession
           } getOrElse (Unauthorized("TwitterStore NotFound") withNewSession)
       } getOrElse (Unauthorized("No session id retrieved") withNewSession)
   }
