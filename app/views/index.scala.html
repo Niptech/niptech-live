@@ -31,6 +31,8 @@
                 </div>
             }
          </p>
+        <br/>
+        <br/>
     </div>
     @if(getYouTubeId() != "") {
         <div style="text-align:center;">
@@ -38,8 +40,7 @@
             <br/>
             <br/>
             <h3>Ou choisis un pseudo</h3>
-        <form action="@routes.Application.chatRoom()">
-            <input id="twitterId" name="twitterId" class="input-xlarge" type="text" placeholder="Twitter id" style="display: none;">
+        <form action="@routes.Application.chatRoom(twitterId=None)">
             <input id="username" name="username" class="input-xlarge" type="text" placeholder="Pseudo" style="font-size:200%; height: 50px;">
             <button class="btn btn-primary" style="margin-top:-10px; font-size:200%; height: 55px;" type="submit">Connection</button>
         </form>
@@ -54,8 +55,11 @@
               alert("Si tu veux programmer en HTML, aide nous plutôt à faire évoluer le chat")
               $("#username").val('')
             }
+            if($("#username").val().indexOf("@@") != -1) {
+                alert("Le caractère @@ est réservé pour les comptes twitters")
+                $("#username").val('')
+            }
         })
-
     })
 
     </script>

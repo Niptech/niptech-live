@@ -118,11 +118,15 @@
         }
 
         $("#password").keypress(handleReturnKey)
+        $("#password").focus()
 
-        window.onload=$('#login').modal({
+        window.onload= function() {
+            $('#login').modal({
                 backdrop: 'static',
                 keyboard: false
-                })
+            })
+            $("#password").focus()
+        }
     </script>
 
     <script src="@routes.Assets.at("javascripts/md5-min.js")" type="text/javascript"></script>
