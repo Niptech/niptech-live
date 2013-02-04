@@ -11,6 +11,10 @@ La page d'administration est sécurisée et est accessible à http://live.niptec
 * L'activation/désactivation du twitter live stream se fait via le bouton éponyme.
 * Pour appliquer les modifications, cliquer sur **Appliquer**
 
+## FLUX YOUTUBE
+Le bouton synchroniser le direct permet à l'utilisateur de se resynchroniser avec le direct sans avoir à recharger toute la page.
+Ceci est utile quand la connection est mauvaise et que le flux youtube s'est désynchronisé avec le direct pour ne pas perdre d'informations.
+
 ## TWITTER LIVESTREAM
 Le Twitter LiveStream permet aux utilisateurs du chat d'interagir avec Twitter :
 * Si sur twitter, un message contenant @niptechlive est posté, il s'affiche dans la chat room. Ainsi, ceux qui n'ont pas la possibilité d'assister au live peuvent envoyer des messages aux personnes présentes.
