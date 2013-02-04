@@ -35,15 +35,11 @@ object Application extends Controller {
       Ok(views.html.admin())
   }
 
-  def initChatRoom = Action {
-    Akka.system.stop(ChatRoom.default)
-    ChatRoom.initialize
-    Ok(views.html.msg("ChatRoom réinitialisée"))
-  }
 
   def configure(onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
     youtubeid foreach {
       id => Cache.set("youtubeid", id)
+      if (id == "") ChatRoom.clean else ChatRoom.initialize
     }
     if (twitterstreamswitch.getOrElse("off") == "on")
       Cache.set("twitterBroadcast", true)
@@ -83,12 +79,13 @@ object Application extends Controller {
       session.get("niptid").map {
         id =>
           Cache.get(id).map {
-            storeRef  =>
+            storeRef =>
               val store = storeRef.asInstanceOf[TwitterStore]
               store.twitter.getOAuthAccessToken(store.requestToken, oauth_verifier)
               val username = store.twitter.getScreenName
               Cache.remove(id)
-              Redirect(routes.Application.chatRoom(Some("@"+username), Some(username))) withNewSession
+              Cache.set("@" + username, store.twitter)
+              Redirect(routes.Application.chatRoom(Some("@" + username), Some(username))) withNewSession
           } getOrElse (Unauthorized("TwitterStore NotFound") withNewSession)
       } getOrElse (Unauthorized("No session id retrieved") withNewSession)
   }

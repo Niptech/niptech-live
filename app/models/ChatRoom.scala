@@ -46,19 +46,24 @@ object Robot {
 
 object ChatRoom {
 
-  implicit val timeout = Timeout(1 second)
+  implicit val timeout = Timeout(5 second)
 
   def initialize = {
     val roomActor = Akka.system.actorOf(Props[ChatRoom], "chatroom")
-
-    Logger.info("roomactor path :" + roomActor.path.toString)
 
     // Create a bot user (just for fun)
     Robot(roomActor)
 
     initTwitterListener(roomActor)
 
+    Logger.info("ChatRoom initialized")
+
     roomActor
+  }
+
+  def clean = {
+    Akka.system.stop(default)
+    Logger.info("ChatRoom shutdown")
   }
 
   def default = Akka.system.actorFor("/user/chatroom")
@@ -107,7 +112,7 @@ object ChatRoom {
       case n: Int => n
       case _ => 0
     }
-    Await.result(f, 10 seconds)
+    Await.result(f, 10 second)
   }
 
   def join(username: String, twitterId: String): scala.concurrent.Future[(Iteratee[JsValue, _], Enumerator[JsValue])] = {
@@ -172,19 +177,28 @@ class ChatRoom extends Actor {
         members = members + username
         twitterIds += username -> TwitterClient.getUserImageUrl(twitterId)
         sender ! Connected(chatEnumerator)
-        self ! NotifyJoin(username)
+        // self ! NotifyJoin(username)
       }
     }
 
     case NotifyJoin(username) => {
-      // notifyAll("join", username, "vient d'entrer dans la ChatRoom")
+      notifyAll("join", username, "vient d'entrer dans la ChatRoom")
     }
 
     case Talk(username, text) => {
-      notifyAll("talk", username, text)
-      if (Cache.getOrElse[Boolean]("twitterBroadcast") {false})
-        try {TwitterClient.twitter.updateStatus((username + " - " + text).take(140))}
-          catch {case exc => Logger.error(exc.getMessage)}
+      if (text startsWith ("save:")) {  //Sends the tweet as a direct message to the user
+        Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size-5).take(140)))
+        Logger.info("Saved to " + username + " direct message")
+      } else {
+        notifyAll("talk", username, text)
+        if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
+          try {
+            TwitterClient.twitter.updateStatus((username + " - " + text).take(140))
+          }
+          catch {
+            case exc => Logger.error(exc.getMessage)
+          }
+      }
     }
 
     case Tweet(status) => {
@@ -199,6 +213,7 @@ class ChatRoom extends Actor {
     case Quit(username) => {
       members = members - username
       twitterIds -= username
+      Cache.remove(username)
       // notifyAll("quit", username, "a quitté la ChatRoom")
     }
 

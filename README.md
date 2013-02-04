@@ -14,8 +14,11 @@ La page d'administration est sécurisée et est accessible à http://live.niptec
 ## TWITTER LIVESTREAM
 Le Twitter LiveStream permet aux utilisateurs du chat d'interagir avec Twitter :
 * Si sur twitter, un message contenant @niptechlive est posté, il s'affiche dans la chat room. Ainsi, ceux qui n'ont pas la possibilité d'assister au live peuvent envoyer des messages aux personnes présentes.
-* Si la fonctionnalité est activée par Ben, tous les messages du live peuvent être diffusés en temps réel sur Twitter. Ils sont postés par l'utilisateur @niptechlive.
-* Un utilisateur peut se connecter via OAuth et son compte twitter, son avatar s'affiche dans la chat room. Sinon, il est possible de ne saisir qu'un pseudo.
+* Si la fonctionnalité est activée par Ben, tous les messages du live peuvent être diffusés en temps réel sur Twitter.
+Ils sont postés par l'utilisateur @niptechlive.
+* Un utilisateur peut se connecter via OAuth et son compte twitter, son avatar s'affiche dans la chat room. Un utilisateur
+connecté avec son compte twitter peut sauvegarder des informations en tapant le mot clé save: suivi d'un texte dans la chatroom Le texte ne
+s'affiche pas mais il est envoyé en tant que direct message à l'utilisatur connecté.
 
 
 ## Licensing
