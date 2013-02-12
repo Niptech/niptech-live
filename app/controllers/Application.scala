@@ -36,15 +36,16 @@ object Application extends Controller {
 
 
   def configure(onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
-    youtubeid foreach {
-      id => Cache.set("youtubeid", id)
-      if (id == "") ChatRoom.clean else ChatRoom.initialize
-    }
-    if (twitterstreamswitch.getOrElse("off") == "on")
-      Cache.set("twitterBroadcast", true)
-    else
-      Cache.set("twitterBroadcast", false)
-    Redirect("/")
+    implicit request =>
+      youtubeid foreach {
+        id => Cache.set("youtubeid", id)
+        if (id == "") ChatRoom.clean
+      }
+      if (twitterstreamswitch.getOrElse("off") == "on")
+        Cache.set("twitterBroadcast", true)
+      else
+        Cache.set("twitterBroadcast", false)
+      Redirect("/")
   }
 
   /**
@@ -86,7 +87,7 @@ object Application extends Controller {
                 userid =>
                   ChatRoom.changeName(userid, "@" + username, Some(image))
                   Redirect("/") withSession (session - "niptid")
-                  //Ok(views.html.chatRoom(userid, "")) withSession (session - "niptid")
+                //Ok(views.html.chatRoom(userid, "")) withSession (session - "niptid")
               } getOrElse {
                 Unauthorized("No userid connected") withNewSession
               }
