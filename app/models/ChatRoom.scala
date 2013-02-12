@@ -17,6 +17,7 @@ import akka.pattern.ask
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
 import twitter4j._
+import collection.parallel.mutable
 
 
 object Robot {
@@ -28,7 +29,7 @@ object Robot {
 
     implicit val timeout = Timeout(1 second)
     // Make the robot join the room
-    chatRoom ? (Join("Syde Bot", "syde")) map {
+    chatRoom ? (Join("Syde Bot")) map {
       case Connected(robotChannel) =>
         // Apply this Enumerator on the logger.
         robotChannel |>> loggerIteratee
@@ -70,7 +71,7 @@ object ChatRoom {
 
   def initTwitterListener(chatRoom: ActorRef) = {
 
-    chatRoom ? (Join("Twitter", "niptechlive"))
+    chatRoom ? (Join("Twitter"))
 
     val twitterStream = TwitterClient.twitterStream
 
@@ -115,19 +116,32 @@ object ChatRoom {
     Await.result(f, 10 second)
   }
 
-  def join(username: String, twitterId: String): scala.concurrent.Future[(Iteratee[JsValue, _], Enumerator[JsValue])] = {
+  def username(userid: String): String = {
+    val f = (default ? GetUsername(userid)).map {
+      case name: String => name
+      case _ => ""
+    }
+    Await.result(f, 10 second)
+  }
 
-    (default ? Join(username, twitterId)).map {
+  def changeName(userid: String, newName: String, imageUrl: Option[String]) = default ! ChangeName(userid, newName, imageUrl)
+
+
+  def quit(userid: String) = default ! Quit(userid)
+
+  def join(userid: String): scala.concurrent.Future[(Iteratee[JsValue, _], Enumerator[JsValue])] = {
+
+    (default ? Join(userid)).map {
 
       case Connected(enumerator) =>
 
         // Create an Iteratee to consume the feed
         val iteratee = Iteratee.foreach[JsValue] {
           event =>
-            default ! Talk(username, (event \ "text").as[String])
+            default ! Talk(userid, (event \ "text").as[String])
         }.mapDone {
           _ =>
-            default ! Quit(username)
+           // default ! Quit(userid)
         }
 
         (iteratee, enumerator)
@@ -162,42 +176,61 @@ class ChatRoom extends Actor {
     "What the mind can conceive, the mind can achieve. Napoleon Hill",
     "Do not expect something for nothing. Be willing to give an equivalent value for all that you desire. Napoleon Hill",
     "It’s better to be king of your world, rather than a peasant in another man’s land. Satya Hanif",
-    "The future belongs to those who believe in the beauty of their dreams. Eleanor Roosevelt")
+    "The future belongs to those who believe in the beauty of their dreams. Eleanor Roosevelt",
+    "Yesterday’s home runs don’t win today’s games. Babe Ruth",
+    "Logic will get you from A to B. Imagination will take you everywhere. Albert Einstein",
+    "It’s not that I’m so smart, it’s just that I stay with the problems longer. Albert Einstein",
+    "Every sale has five basic obstacles: no need, no money, no hurry, no desire, no trust. Zig Ziglar",
+    "All good leadership skills can be boiled down to 2 categories: Capacity to Connect & Capacity to Initiate Skillful Change. Bill_Gross",
+    "A stumbling block to the pessimist is a stepping stone to the optimist.",
+    "When you do the common things in life in an uncommon way, you will command the attention of the world. George Washington Carver",
+    "Excuses are the nails used to build a house of failure. Dan Wilder",
+    "If you want to fly, you have to give up the things that weigh you down. Unknown",
+    "The primary cause of unhappiness is never the situation but your thoughts about it. Eckhart Tolle",
+    "Failure + failure + failure = success. You only fail when you quit. Jack Hyles",
+    "Don’t measure yourself by what you have accomplished, but by what you should have accomplished with your ability. John Wooden",
+    "Luck is what happens when preparation meets opportunity. Unknown",
+    "Choose a job you love and you will never have to work a day in your life. Confucius",
+    "You were born with wings. Why prefer to crawl through life? Jalaluddin Rumi")
 
-  var members = Set.empty[String]
-  var twitterIds = Map.empty[String, String] withDefaultValue ("http://www.gravatar.com/avatar/none?s=20")
+  val members = scala.collection.mutable.Map.empty[String, Member]
   val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
 
   def receive = {
 
-    case Join(username, twitterId) => {
-      if (members.contains(username)) {
-        sender ! CannotConnect("Ce pseudo est déjà utilisé")
-      } else {
-        members = members + username
-        twitterIds += username -> TwitterClient.getUserImageUrl(twitterId)
+    case Join(userid) => {
+      members.get(userid).map {
+        member =>
+          sender ! Connected(chatEnumerator)
+      } getOrElse {
+        members.put(userid, Member(userid, "http://www.gravatar.com/avatar/none?s=20"))
         sender ! Connected(chatEnumerator)
         // self ! NotifyJoin(username)
       }
     }
 
-    case NotifyJoin(username) => {
-      notifyAll("join", username, "vient d'entrer dans la ChatRoom")
+    case NotifyJoin(userid) => {
+      notifyAll("join", userid, "vient d'entrer dans la ChatRoom")
     }
 
-    case Talk(username, text) => {
-      if (text startsWith ("save:")) {  //Sends the tweet as a direct message to the user
-        Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size-5).take(140)))
-        Logger.info("Saved to " + username + " direct message")
-      } else {
-        notifyAll("talk", username, text)
-        if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
-          try {
-            TwitterClient.twitter.updateStatus((username + " - " + text).take(140))
-          }
-          catch {
-            case exc => Logger.error(exc.getMessage)
-          }
+    case Talk(userid, text) => {
+      val username = members(userid).username
+      text match {
+        case save if save startsWith ("save:") =>
+          Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
+        case changeuser if changeuser startsWith ("nickname:") =>
+          val newname = text.takeRight(text.size - 9)
+          members(userid).username = newname
+          notifyAll("talk", userid, username + " a changé son nom en " + newname)
+        case _ =>
+          notifyAll("talk", userid, text)
+          if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
+            try {
+              TwitterClient.twitter.updateStatus((username.takeRight(username.size - 1) + " - " + text).take(140))
+            }
+            catch {
+              case exc: Throwable => Logger.error(exc.getMessage)
+            }
       }
     }
 
@@ -205,35 +238,43 @@ class ChatRoom extends Actor {
       notifyAll("talk", "Twitter", "@" + status.getUser().getScreenName() + " - " + status.getText())
     }
 
-    case SayQuote(username) => {
+    case SayQuote(userid) => {
       val quote = quotes(new Random(new java.util.Date().getTime()).nextInt(quotes.size - 1))
-      notifyAll("talk", username, quote)
+      notifyAll("talk", userid, quote)
     }
 
     case Quit(username) => {
-      members = members - username
-      twitterIds -= username
+      members.remove(username)
       Cache.remove(username)
       // notifyAll("quit", username, "a quitté la ChatRoom")
     }
 
     case NbUsers() => sender ! members.size
 
+    case GetUsername(userid) =>
+      val name = members.get(userid) map (member => member.username) getOrElse (userid)
+      sender ! name
+
+    case ChangeName(userid, newname, image) =>
+      members(userid).username = newname
+      image.map(url=>members(userid).imageUrl = url)
+
   }
 
-  def notifyAll(kind: String, user: String, text: String) {
+  def notifyAll(kind: String, userid: String, text: String) {
+    val member = members(userid)
     val msg = JsObject(
       Seq(
         "kind" -> JsString(kind),
-        "user" -> JsString(user),
-        "avatar" -> JsString(twitterIds(user)),
+        "user" -> JsString(member.username),
+        "avatar" -> JsString(member.imageUrl),
         "message" -> JsString(text),
-        "members" -> JsArray(members.toList.map(JsString))))
+        "members" -> JsArray(members.map(p => p._2.username).toList.map(JsString))))
     chatChannel.push(msg)
   }
 }
 
-case class Join(username: String, twitterId: String)
+case class Join(userid: String)
 
 case class Quit(username: String)
 
@@ -247,8 +288,13 @@ case class SayQuote(username: String)
 
 case class NbUsers()
 
+case class GetUsername(userid: String)
+
+case class ChangeName(userid: String, newName: String, imageUrl: Option[String])
+
 case class Connected(enumerator: Enumerator[JsValue])
 
 case class CannotConnect(msg: String)
 
+case class Member(var username: String, var imageUrl: String)
 

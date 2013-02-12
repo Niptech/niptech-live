@@ -1,11 +1,8 @@
-@(connected: Option[String])(content: Html)
+@(user: Option[String])(content: Html)
 
 @import play.api.cache.Cache
 @import play.api.Play.current
 
-@getYouTubeId() = @{
-    Cache.getOrElse[String]("youtubeid") {""}
-}
 
 <!DOCTYPE html>
 
@@ -24,15 +21,11 @@
             <div>
                 <div class="container">
                     <img class="" style="margin-left:50px;" src="@routes.Assets.at("images/niptech.png")"></img>
-                   @if(getYouTubeId().trim != "") {
-
-                    @connected.map { username =>
+                    @user.map { username =>
                         <p class="pull-right">
-                            Ton pseudo @username —
-                            <a href="@routes.Application.index()">Disconnect</a>
+                            <a href="@routes.Application.doLogout()">Disconnect</a>
                         </p>
                     }
-                }
                     <h1 class="pull-right" style="margin-top:35px;">Bienvenue sur le Live Niptech</h1>
                 </div>
             </div>

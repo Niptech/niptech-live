@@ -7,12 +7,15 @@ import play.api.libs.json._
 import play.api.libs.iteratee._
 import play.api.cache.Cache
 import play.api.Play.current
+import play.api.Play.configuration
 
 import models._
 
 import akka.actor._
 import scala.concurrent.duration._
 import twitter4j.{Twitter, TwitterFactory}
+import play.api.mvc.Security.Authenticated
+
 import twitter4j.auth.RequestToken
 import scala.util.Random
 import play.api.Logger
@@ -22,17 +25,13 @@ case class TwitterStore(twitter: Twitter, requestToken: RequestToken)
 
 object Application extends Controller {
 
-  /**
-   * Just display the home page.
-   */
-  def index = Action {
-    implicit request =>
-      Ok(views.html.index())
-  }
+  val users = configuration.getString("authorizedUsers").map(_.split(",").toList).getOrElse(List())
 
-  def admin = Action {
-    implicit request =>
+
+  def admin = Secured {
+    Action {
       Ok(views.html.admin())
+    }
   }
 
 
@@ -51,21 +50,18 @@ object Application extends Controller {
   /**
    * Display the chat room page.
    */
-  def chatRoom(username: Option[String], email: Option[String]) = Action {
+  def chatRoom = Action {
     implicit request =>
-      if (Cache.getOrElse[String]("youtubeid")("") == "")
-        Redirect("/")
-      else
-        username.filterNot(_.isEmpty).map {
-          username =>
-            Ok(views.html.chatRoom(username, email.getOrElse("")))
-        }.getOrElse {
-          Redirect(routes.Application.index).flashing(
-            "error" -> "Please choose a valid username.")
-        }
+      request.session.get("userid").map {
+        username =>
+          Ok(views.html.chatRoom(username, ""))
+      }.getOrElse {
+        val userid = "Guest" + ChatRoom.nbUsers.toString
+        Ok(views.html.chatRoom(userid, "")) withSession ("userid" -> userid)
+      }
   }
 
-  def twitterLogin(username: Option[String], email: Option[String]) = Action {
+  def twitterLogin = Action {
     implicit request =>
       val twitter = TwitterClient.newInstance
       val id = new Random(new java.util.Date().getTime()).nextLong().abs.toString
@@ -83,9 +79,17 @@ object Application extends Controller {
               val store = storeRef.asInstanceOf[TwitterStore]
               store.twitter.getOAuthAccessToken(store.requestToken, oauth_verifier)
               val username = store.twitter.getScreenName
+              val image = TwitterClient.getUserImageUrl(username)
               Cache.remove(id)
               Cache.set("@" + username, store.twitter)
-              Redirect(routes.Application.chatRoom(Some("@" + username), Some(username))) withNewSession
+              session.get("userid").map {
+                userid =>
+                  ChatRoom.changeName(userid, "@" + username, Some(image))
+                  Redirect("/") withSession (session - "niptid")
+                  //Ok(views.html.chatRoom(userid, "")) withSession (session - "niptid")
+              } getOrElse {
+                Unauthorized("No userid connected") withNewSession
+              }
           } getOrElse (Unauthorized("TwitterStore NotFound") withNewSession)
       } getOrElse (Unauthorized("No session id retrieved") withNewSession)
   }
@@ -93,10 +97,42 @@ object Application extends Controller {
   /**
    * Handles the chat websocket.
    */
-  def chat(username: String, email: String) = WebSocket.async[JsValue] {
+  def chat(userid: String) = WebSocket.async[JsValue] {
     request =>
-      ChatRoom.join(username, email)
+      ChatRoom.join(userid)
   }
 
+
+  def login = Action {
+    Ok(views.html.login())
+  }
+
+  def doLogin = Action(parse.urlFormEncoded) {
+    request =>
+      request.body("password").headOption match {
+        case Some(password) =>
+          if (users.contains(password))
+            Redirect("/admin").withSession(("admin", password))
+          else
+            Ok(views.html.login(Some("Password invalide")))
+        case _ => Ok(views.html.login(Some("Password invalide")))
+      }
+  }
+
+  def doLogout = Action {
+    request =>
+      request.session.get("userid").map {
+        userid =>
+          ChatRoom.quit(userid)
+          Ok(views.html.msg("Tu es déconnecté de la chat room niptech")).withNewSession
+      } getOrElse {
+        Ok(views.html.msg("Pas d'utilisateur connecté"))
+      }
+  }
+
+  def Secured(action: Action[AnyContent]) = Authenticated(
+    req => req.session.get("admin"),
+    _ => Forbidden(views.html.login(Some("Il faut être connecté pour accéder à la page d'administration")))
+  )(username => action)
 
 }

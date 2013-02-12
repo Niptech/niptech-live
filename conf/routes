@@ -3,14 +3,18 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-GET     /room                       controllers.Application.chatRoom(username: Option[String] ?= None, twitterId: Option[String] ?= None)
-GET     /twitterLogin               controllers.Application.twitterLogin(username: Option[String] ?= None, twitterId: Option[String] ?= None)
-GET     /room/chat                  controllers.Application.chat(username, twitterId)
+GET     /                           controllers.Application.chatRoom
+GET     /twitterLogin               controllers.Application.twitterLogin
+GET     /room/chat                  controllers.Application.chat(userid:String)
 GET     /callback                   controllers.Application.callback(oauth_token: String, oauth_verifier: String)
 
 GET     /admin                      controllers.Application.admin
 GET     /configure                  controllers.Application.configure(onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None)
+
+GET     /login                      controllers.Application.login
+POST    /login                      controllers.Application.doLogin
+GET     /logout                     controllers.Application.doLogout
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

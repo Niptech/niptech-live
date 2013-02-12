@@ -4,9 +4,9 @@
 @import play.api.Play.current
 @import models.ChatRoom
 
-    @getYouTubeId() = @{
-        Cache.getOrElse[String]("youtubeid") {""}
-    }
+@getYouTubeId() = @{
+    Cache.getOrElse[String]("youtubeid") {""}
+}
 
 @main(Some(username)) {
 
@@ -21,21 +21,47 @@
             <div id="ytplayer"></div>
             <button class="btn btn-primary" id="reloadvideo" onclick="reloadVideo()">Synchronisation avec le direct</button>
         </div>
-        <div id="onChat" class="span5" style="margin-left: 10px;">
-            <div id="main" style="height:390px;">
-                <div id="messages">
+        <div class="span5" style="margin-left: 10px;">
+            <div id="onChat">
+                <div id="main" style="height:390px;">
+                    <div id="messages">
+                    </div>
+                    <textarea id="talk" style="width: 360px;"></textarea>
                 </div>
-                <textarea id="talk" style="width: 360px;"></textarea>
             </div>
             @if(username.contains("@")) {
                 <a href="#" id="help" onclick="toggleHelp()" class="badge badge-info" rel="popover" trigger="hover" data-content="Tapez save:'text' pour sauvegarder un texte en vous envoyant un direct message" data-original-title="Aide">
                     Aide</a>
             }
+            <button class="btn btn-primary" id="changeUser" onclick="changeNickname()">Change nickname</button>
+            <a class="btn btn-primary" id="connectTwitter" href="@routes.Application.twitterLogin()">Twitter</a>
+            <div class="alert alert-success fade in" id="infomsg" style="display: none">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span></span>
+            </div>
         </div>
         <div class="span2" style="border-bottom: 2px solid #aaa; margin-left: 10px;">
             <h4 id="members-title" style="margin-top:0px;">Membres</h4>
             <ul id="members">
             </ul>
+        </div>
+    </div>
+
+    <div id="changeuser" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="changeuserLabel" aria-hidden="true">
+        <div class="modal-header">
+            <h3>Merci de saisir ton nouveau username</h3>
+        </div>
+        <div class="modal-body">
+            <input type="input" name="username" id="username"
+            style="margin-top: 10px;
+                    width: 300px;
+                    height: 40px;
+                    font-size: 23px;
+                    font-family: Trebuchet, Arial, sans-serif;
+                    font-weight: bold;">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" name="changeButton" id="changeButton" style="height: 45px; font-size: 23px;">Change</button>
         </div>
     </div>
 
@@ -77,16 +103,37 @@
             $("#help").popover('toggle')
         }
 
+        function showMsg(textMsg) {
+            $("#infomsg span").text(textMsg)
+            var msg = $("#infomsg").alert()
+            msg.fadeIn()
+            msg.delay(3000).fadeOut()
+        }
+
+        function changeNickname() {
+            $('#changeuser').modal()
+            $("#username").focus()
+        }
+
+        var allMembers = [];
+
+
         $(function() {
 
 			var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-            var chatSocket = new WS("@routes.Application.chat(username, twitterId).webSocketURL()")
+            var chatSocket = new WS("@routes.Application.chat(username).webSocketURL()")
 
             var sendMessage = function() {
                 chatSocket.send(JSON.stringify(
                     {text: $("#talk").val()}
                 ))
                 $("#talk").val('')
+            }
+
+            var sendText = function(textMsg) {
+                chatSocket.send(JSON.stringify(
+                    {text: textMsg}
+                ))
             }
 
             var urlExt = new RegExp("(((file|gopher|news|nntp|telnet|http|ftp|https|ftps|sftp)://)|(www\.))+(([a-zA-Z0-9\._-]+\.[a-zA-Z]{2,6})|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(/[a-zA-Z0-9\&amp;%_\./-~-]*)?", "g")
@@ -125,9 +172,13 @@
 
                 // Update the members list
                 $("#members").html('')
+                allMembers = data.members
                 $(data.members).each(function() {
-                $("#members").append('<li>' + this + '</li>')
-                })
+                    if (this != myname)
+                        $("#members").append('<li>' + this + '</li>')
+                    else
+                        $("#members").append('<li><strong>' + this + '</strong></li>')
+            })
 
                 //Update the members number
                 $("#members-title").html(data.members.length + ' Membres')
@@ -144,6 +195,48 @@
             $("#talk").keypress(handleReturnKey)
 
             chatSocket.onmessage = receiveEvent
+
+            var alreadyExist = function(user) {
+                var resp = false
+                $(allMembers).each(function() {
+                    if (this == user)
+                        resp = true
+                    })
+                return resp
+            }
+
+            var changeUsername = function(e) {
+                var username = document.getElementById('username').value
+                if(username.indexOf("<") != -1) {
+                    showMsg("Si tu veux programmer en HTML, aide nous plutôt à faire évoluer le chat")
+                } else
+                if(username.indexOf("@@") != -1) {
+                    showMsg("Le caractère @@ est réservé pour les comptes twitters")
+                } else
+                if(alreadyExist(username)) {
+                    showMsg("Utilisateur déjà existant")
+                } else
+                {
+                    myname = username
+                    sendText("nickname:" + username)
+                }
+                $("#changeuser").modal('hide')
+            }
+
+            var handleUsernameReturnKey = function(e) {
+            if(e.charCode == 13 || e.keyCode == 13) {
+                    e.preventDefault()
+                    changeUsername()
+                }
+            }
+
+            $("#username").keypress(handleUsernameReturnKey)
+            $("#changeButton").click(changeUsername)
+            $("#username").focus()
+
+            var myname = "@ChatRoom.username(username)"
+
+            showMsg("Connecté en tant que @ChatRoom.username(username)")
 
         })
 

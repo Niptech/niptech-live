@@ -48,7 +48,7 @@ object TwitterClient {
   def getUserImageUrl(user: String) = try {
     twitter.showUser(user).getMiniProfileImageURL
   } catch {
-    case exc => defaultImageUrl
+    case exc:Throwable => defaultImageUrl
   }
 
 }
