@@ -29,17 +29,16 @@
                     <textarea id="talk" style="width: 360px;"></textarea>
                 </div>
             </div>
-            @if(username.contains("@")) {
-                <a href="#" id="help" onclick="toggleHelp()" class="badge badge-info" rel="popover" trigger="hover" data-content="Tapez save:'text' pour sauvegarder un texte en vous envoyant un direct message" data-original-title="Aide">
-                    Aide</a>
-            }
-            <button class="btn btn-primary" id="changeUser" onclick="changeNickname()">Change nickname</button>
-            <a class="btn btn-primary" id="connectTwitter" href="@routes.Application.twitterLogin()">Twitter</a>
+            <button class="btn btn-primary" id="changeUserButton" onclick="changeNickname()">Change nickname</button>
+            <a class="btn btn-primary" id="connectTwitter" href="@routes.Application.twitterLogin()">Connexion avec Twitter</a>
             <div class="alert alert-success fade in" id="infomsg" style="display: none">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <span></span>
             </div>
-        </div>
+            <div class="alert alert-error fade in" id="errormsg" style="display: none">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span></span>
+            </div>        </div>
         <div class="span2" style="border-bottom: 2px solid #aaa; margin-left: 10px;">
             <h4 id="members-title" style="margin-top:0px;">Membres</h4>
             <ul id="members">
@@ -110,6 +109,13 @@
             msg.delay(3000).fadeOut()
         }
 
+        function showErrorMsg(textMsg) {
+            $("#errormsg span").text(textMsg)
+            var msg = $("#errormsg").alert()
+            msg.fadeIn()
+            msg.delay(5000).fadeOut()
+        }
+
         function changeNickname() {
             $('#changeuser').modal()
             $("#username").focus()
@@ -163,7 +169,7 @@
                 $(el).append("<p>"+data.message.replace(urlExt, "<a href=\"$&\" target=_blank>$&</a>")+"</p>")
 
                 $(el).addClass(data.kind)
-                if(data.user == '@username') $(el).addClass('me')
+                if(data.user == myname) $(el).addClass('me')
                 $('#messages').append(el)
 
                 //Scroll to the bottom
@@ -208,15 +214,17 @@
             var changeUsername = function(e) {
                 var username = document.getElementById('username').value
                 if(username.indexOf("<") != -1) {
-                    showMsg("Si tu veux programmer en HTML, aide nous plutôt à faire évoluer le chat")
+                    showErrorMsg("Si tu veux programmer en HTML, aide nous plutôt à faire évoluer le chat")
                 } else
                 if(username.indexOf("@@") != -1) {
-                    showMsg("Le caractère @@ est réservé pour les comptes twitters")
+                    showErrorMsg("Le caractère @@ est réservé pour les comptes twitters")
                 } else
                 if(alreadyExist(username)) {
-                    showMsg("Utilisateur déjà existant")
+                    showErrorMsg("Utilisateur déjà existant")
                 } else
-                {
+                if(username.trim() == "") {
+                    showErrorMsg("Merci de saisir un nom d'utilisateur")
+                } else               {
                     myname = username
                     sendText("nickname:" + username)
                 }
@@ -239,7 +247,12 @@
             showMsg("Connecté en tant que @ChatRoom.username(username)")
 
         })
+            // TODO intégrer les smileys
+
 
     </script>
+
+
+
 
 }
