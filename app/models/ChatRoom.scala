@@ -31,7 +31,7 @@ object ChatRoom {
 
     robot
 
-    initTwitterListener
+   // initTwitterListener
 
     Logger.info("ChatRoom initialized")
 
@@ -65,6 +65,7 @@ object ChatRoom {
   def initTwitterListener = {
 
     val twitterActor = Akka.system.actorOf(Props[TwitterMember], "Twitter")
+
     members += "Twitter"
 
     val twitterStream = TwitterClient.twitterStream
@@ -125,14 +126,15 @@ object ChatRoom {
 
 class Member(var userid: String, var username: String, var imageUrl: String) extends Actor {
 
-  val connectedTimeout = 90 * 60 * 1000
-  val disconnectedTimeout = 2 * 60 * 1000
+  val connectedTimeout = 90 minutes
+  val disconnectedTimeout = 90 seconds
+
+  var connectedDeadline = connectedTimeout fromNow
+  var disconnectedDeadline = disconnectedTimeout fromNow
 
   var isConnected = false
 
   val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
-
-  var lastActionTime = new java.util.Date().getTime
 
   def receive = {
 
@@ -151,7 +153,8 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
     }
 
     case Talk(text) => {
-      lastActionTime = new java.util.Date().getTime
+      connectedDeadline = connectedTimeout.fromNow
+      disconnectedDeadline = disconnectedTimeout.fromNow
       text match {
         case save if save startsWith ("save:") =>
           Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
@@ -184,9 +187,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       chatChannel.push(msg)
 
     case CheckTimeout() =>
-      val now = new java.util.Date().getTime
-      val inactivity = now - lastActionTime
-      val mustQuit = (!isConnected && inactivity > disconnectedTimeout) || (isConnected && inactivity > connectedTimeout)
+      val mustQuit = (!isConnected && disconnectedDeadline.isOverdue()) || (isConnected && connectedDeadline.isOverdue())
       Logger.debug("Timeout for" + username + " value :" + mustQuit)
       if (mustQuit)
         self ! Quit()
