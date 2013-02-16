@@ -40,8 +40,11 @@
                 <span></span>
             </div>        </div>
         <div class="span2" style="border-bottom: 2px solid #aaa; margin-left: 10px;">
-            <h4 id="members-title" style="margin-top:0px;">Membres</h4>
+            <h4 id="members-title" style="margin-top:0px;">@ChatRoom.members.length Membres</h4>
             <ul id="members">
+                @for(member <- ChatRoom.members) {
+                    <li>@member</li>
+                }
             </ul>
         </div>
     </div>

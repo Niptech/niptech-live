@@ -13,12 +13,16 @@ import models._
 
 import akka.actor._
 import scala.concurrent.duration._
+import akka.pattern.{ask, pipe}
 import twitter4j.{Twitter, TwitterFactory}
 import play.api.mvc.Security.Authenticated
+import play.api.libs.concurrent.Execution.Implicits._
+
 
 import twitter4j.auth.RequestToken
 import scala.util.Random
 import play.api.Logger
+import akka.util.Timeout
 
 
 case class TwitterStore(twitter: Twitter, requestToken: RequestToken)
@@ -26,6 +30,8 @@ case class TwitterStore(twitter: Twitter, requestToken: RequestToken)
 object Application extends Controller {
 
   val users = configuration.getString("authorizedUsers").map(_.split(",").toList).getOrElse(List())
+
+  implicit val timeout = Timeout(5 second)
 
 
   def admin = Secured {
@@ -39,7 +45,6 @@ object Application extends Controller {
     implicit request =>
       youtubeid foreach {
         id => Cache.set("youtubeid", id)
-        if (id == "") ChatRoom.clean
       }
       if (twitterstreamswitch.getOrElse("off") == "on")
         Cache.set("twitterBroadcast", true)
@@ -53,13 +58,10 @@ object Application extends Controller {
    */
   def chatRoom = Action {
     implicit request =>
-      request.session.get("userid").map {
-        username =>
-          Ok(views.html.chatRoom(username, ""))
-      }.getOrElse {
-        val userid = "Guest" + ChatRoom.nbUsers.toString
-        Ok(views.html.chatRoom(userid, "")) withSession ("userid" -> userid)
-      }
+      val userid = request.session.get("userid").getOrElse("Guest" + ChatRoom.nbUsers.toString)
+      if (Akka.system.actorFor("/user/" + userid).isTerminated)
+        ChatRoom.join(userid)
+      Ok(views.html.chatRoom(userid, "")) withSession ("userid" -> userid)
   }
 
   def twitterLogin = Action {
@@ -100,7 +102,35 @@ object Application extends Controller {
    */
   def chat(userid: String) = WebSocket.async[JsValue] {
     request =>
-      ChatRoom.join(userid)
+      val memberActor = Akka.system.actorFor("/user/" + userid)
+
+      (memberActor ? Connect()).map {
+
+        case Connected(enumerator) =>
+
+          // Create an Iteratee to consume the feed
+          val iteratee = Iteratee.foreach[JsValue] {
+            event =>
+              memberActor ! Talk((event \ "text").as[String])
+          }.mapDone {
+            _ =>
+            // default ! Quit(userid)
+          }
+
+          (iteratee, enumerator)
+
+        case CannotConnect(error) =>
+
+          // Connection error
+          // A finished Iteratee sending EOF
+          val iteratee = Done[JsValue, Unit]((), Input.EOF)
+
+          // Send an error and close the socket
+          val enumerator = Enumerator[JsValue](JsObject(Seq("error" -> JsString(error)))).andThen(Enumerator.enumInput(Input.EOF))
+
+          (iteratee, enumerator)
+
+      }
   }
 
 
