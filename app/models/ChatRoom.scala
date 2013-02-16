@@ -31,7 +31,7 @@ object ChatRoom {
 
     robot
 
-   // initTwitterListener
+    initTwitterListener
 
     Logger.info("ChatRoom initialized")
 
@@ -140,7 +140,17 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
 
     case Connect() => {
       isConnected = true
+      val msg = JsObject(
+        Seq(
+          "kind" -> JsString("talk"),
+          "user" -> JsString(username),
+          "avatar" -> JsString(imageUrl),
+          "message" -> JsString("Vous êtes connecté à la ChatRoom"),
+          "members" -> JsArray(ChatRoom.members.map(JsString))))
       sender ! Connected(chatEnumerator)
+      Akka.system.scheduler.scheduleOnce(1 second) {
+        self ! ChatMessage(msg)
+      }
     }
 
     case Disconnect() => {
