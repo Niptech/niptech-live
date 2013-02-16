@@ -35,34 +35,43 @@ object ChatRoom {
 
     Logger.info("ChatRoom initialized")
 
-
   }
 
   def join(username: String) = {
     members += username
     val memberActor = Akka.system.actorOf(Props(new Member(username, username, "")), username)
     val r = Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
-    Logger.debug("Soucrit : " + r.toString)
+    Akka.system.scheduler.schedule(
+      30 seconds,
+      30 seconds,
+      memberActor,
+      CheckTimeout())
     Logger.debug(username + " vient de rejoindre la chatroom")
     memberActor
   }
 
-  def robot = Akka.system.scheduler.schedule(
-    5 minutes,
-    5 minutes,
-    ChatRoom.join("Syde_Bot"),
-    SayQuote())
+  def robot = {
+    val robotName = "Syde_Bot"
+    members += robotName
+    val robotActor = Akka.system.actorOf(Props(new Robot(robotName)), robotName)
+    Akka.system.scheduler.schedule(
+      5 minutes,
+      5 minutes,
+      robotActor,
+      SayQuote())
+  }
 
 
   def initTwitterListener = {
 
-    val twitterActor = join("Twitter")
+    val twitterActor = Akka.system.actorOf(Props[TwitterMember], "Twitter")
+    members += "Twitter"
 
     val twitterStream = TwitterClient.twitterStream
 
     val listener = new StatusListener() {
       @Override
-      def onStatus(st: Status) = twitterActor ? Tweet(st)
+      def onStatus(st: Status) = twitterActor ! Tweet(st)
 
       @Override
       def onDeletionNotice(st: StatusDeletionNotice) = {
@@ -110,17 +119,100 @@ object ChatRoom {
   }
 
 
-  def quit(userid: String) = {
-    members -= username(userid)
-    Cache.remove(userid)
-    val memberActor = Akka.system.actorFor("/user/" + userid)
-    Akka.system.eventStream.unsubscribe(memberActor, classOf[ChatMessage])
-    Akka.system.stop(memberActor)
-  }
+  def quit(userid: String) = Akka.system.actorFor("/user/" + userid) ! Quit()
 
 }
 
 class Member(var userid: String, var username: String, var imageUrl: String) extends Actor {
+
+  val connectedTimeout = 90 * 60 * 1000
+  val disconnectedTimeout = 2 * 60 * 1000
+
+  var isConnected = false
+
+  val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
+
+  var lastActionTime = new java.util.Date().getTime
+
+  def receive = {
+
+    case Connect() => {
+      isConnected = true
+      sender ! Connected(chatEnumerator)
+    }
+
+    case Disconnect() => {
+      Logger.debug(username + " disconnected")
+      isConnected = false
+    }
+
+    case NotifyJoin() => {
+      notifyAll("join", "vient d'entrer dans la ChatRoom")
+    }
+
+    case Talk(text) => {
+      lastActionTime = new java.util.Date().getTime
+      text match {
+        case save if save startsWith ("save:") =>
+          Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
+        case changeuser if changeuser startsWith ("nickname:") =>
+          self ! ChangeName(text.takeRight(text.size - 9), None)
+
+        case _ =>
+          notifyAll("talk", text)
+          if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
+            try {
+              TwitterClient.twitter.updateStatus((username.takeRight(username.size - 1) + " - " + text).take(140))
+            }
+            catch {
+              case exc: Throwable => Logger.error(exc.getMessage)
+            }
+      }
+    }
+
+    case GetUsername() => sender ! username
+
+    case ChangeName(newname, image) =>
+      ChatRoom.members -= username
+      ChatRoom.members += newname
+      notifyAll("talk", username + " a changé son nom en " + newname)
+      username = newname
+      image.map(url => imageUrl = url)
+
+    case ChatMessage(msg: JsObject) =>
+      Logger.debug(username + " - Reçu : " + msg.toString)
+      chatChannel.push(msg)
+
+    case CheckTimeout() =>
+      val now = new java.util.Date().getTime
+      val inactivity = now - lastActionTime
+      val mustQuit = (!isConnected && inactivity > disconnectedTimeout) || (isConnected && inactivity > connectedTimeout)
+      Logger.debug("Timeout for" + username + " value :" + mustQuit)
+      if (mustQuit)
+        self ! Quit()
+
+    case Quit() =>
+      Logger.debug(username + " quitte la chatroom")
+      ChatRoom.members -= username
+      Cache.remove(userid)
+      Akka.system.eventStream.unsubscribe(self, classOf[ChatMessage])
+      Akka.system.stop(self)
+
+  }
+
+  def notifyAll(kind: String, text: String) {
+    val msg = JsObject(
+      Seq(
+        "kind" -> JsString(kind),
+        "user" -> JsString(username),
+        "avatar" -> JsString(imageUrl),
+        "message" -> JsString(text),
+        "members" -> JsArray(ChatRoom.members.map(JsString))))
+    Akka.system.eventStream.publish(ChatMessage(msg))
+  }
+}
+
+class Robot(username: String) extends Member(username, username, "") {
 
   val quotes = List(
     "A great person attracts great people and knows how to hold them together. Johann Wolfgang Von Goethe",
@@ -149,73 +241,28 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
     "Choose a job you love and you will never have to work a day in your life. Confucius",
     "You were born with wings. Why prefer to crawl through life? Jalaluddin Rumi")
 
-  val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
-
-  def receive = {
-
-    case Connect() => sender ! Connected(chatEnumerator)
-
-    case NotifyJoin() => {
-      notifyAll("join", "vient d'entrer dans la ChatRoom")
-    }
-
-    case Talk(text) => {
-      text match {
-        case save if save startsWith ("save:") =>
-          Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
-        case changeuser if changeuser startsWith ("nickname:") =>
-          self ! ChangeName(text.takeRight(text.size - 9), None)
-
-        case _ =>
-          notifyAll("talk", text)
-          if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
-            try {
-              TwitterClient.twitter.updateStatus((username.takeRight(username.size - 1) + " - " + text).take(140))
-            }
-            catch {
-              case exc: Throwable => Logger.error(exc.getMessage)
-            }
-      }
-    }
-
-    case Tweet(status) => {
-      notifyAll("talk", "@" + status.getUser().getScreenName() + " - " + status.getText())
-    }
-
+  override def receive = {
     case SayQuote() => {
       val quote = quotes(new Random(new java.util.Date().getTime()).nextInt(quotes.size - 1))
       notifyAll("talk", quote)
     }
-
-    case GetUsername() => sender ! username
-
-    case ChangeName(newname, image) =>
-      ChatRoom.members -= username
-      ChatRoom.members += newname
-      notifyAll("talk", username + " a changé son nom en " + newname)
-      username = newname
-      image.map(url => imageUrl = url)
-
-    case ChatMessage(msg: JsObject) =>
-      Logger.debug(username + " - Reçu : " + msg.toString)
-      chatChannel.push(msg)
-
   }
 
-  def notifyAll(kind: String, text: String) {
-    val msg = JsObject(
-      Seq(
-        "kind" -> JsString(kind),
-        "user" -> JsString(username),
-        "avatar" -> JsString(imageUrl),
-        "message" -> JsString(text),
-        "members" -> JsArray(ChatRoom.members.map(JsString))))
-    Logger.debug("Notify all " + username + "-" + text)
-    Akka.system.eventStream.publish(ChatMessage(msg))
+}
+
+class TwitterMember extends Member("Twitter", "Twitter", "") {
+  override def receive = {
+    case Tweet(status) => {
+      notifyAll("talk", "@" + status.getUser().getScreenName() + " - " + status.getText())
+    }
   }
 }
 
 case class Connect()
+
+case class Disconnect()
+
+case class Quit()
 
 case class Talk(text: String)
 
@@ -228,6 +275,8 @@ case class NotifyJoin()
 case class SayQuote()
 
 case class GetUsername()
+
+case class CheckTimeout()
 
 case class ChangeName(newName: String, imageUrl: Option[String])
 

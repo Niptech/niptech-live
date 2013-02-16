@@ -66,7 +66,7 @@ object Application extends Controller {
 
   def newUserid: String = {
     var n = 1
-    while (! Akka.system.actorFor("/user/" + "Guest" + n.toString).isTerminated)
+    while (!Akka.system.actorFor("/user/" + "Guest" + n.toString).isTerminated)
       n += 1
     "Guest" + n.toString
   }
@@ -122,7 +122,7 @@ object Application extends Controller {
               memberActor ! Talk((event \ "text").as[String])
           }.mapDone {
             _ =>
-            // default ! Quit(userid)
+              memberActor ! Disconnect()
           }
 
           (iteratee, enumerator)
