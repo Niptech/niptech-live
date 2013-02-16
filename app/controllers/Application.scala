@@ -65,8 +65,8 @@ object Application extends Controller {
   }
 
   def newUserid: String = {
-    var n = ChatRoom.nbUsers
-    while (ChatRoom.members.contains("Guest" + n.toString))
+    var n = 1
+    while (! Akka.system.actorFor("/user/" + "Guest" + n.toString).isTerminated)
       n += 1
     "Guest" + n.toString
   }
