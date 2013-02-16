@@ -31,7 +31,7 @@ object ChatRoom {
 
     robot
 
-  //  initTwitterListener
+    initTwitterListener
 
     Logger.info("ChatRoom initialized")
 
@@ -41,8 +41,9 @@ object ChatRoom {
   def join(username: String) = {
     members += username
     val memberActor = Akka.system.actorOf(Props(new Member(username, username, "")), username)
-    Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
-    Logger.info(username + "vient de rejoindre la chatroom")
+    val r = Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
+    Logger.debug("Soucrit : " + r.toString)
+    Logger.debug(username + " vient de rejoindre la chatroom")
     memberActor
   }
 
@@ -111,7 +112,9 @@ object ChatRoom {
 
   def quit(userid: String) = {
     members -= username(userid)
+    Cache.remove(userid)
     val memberActor = Akka.system.actorFor("/user/" + userid)
+    Akka.system.eventStream.unsubscribe(memberActor, classOf[ChatMessage])
     Akka.system.stop(memberActor)
   }
 
@@ -194,6 +197,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       image.map(url => imageUrl = url)
 
     case ChatMessage(msg: JsObject) =>
+      Logger.debug(username + " - Reçu : " + msg.toString)
       chatChannel.push(msg)
 
   }
@@ -206,6 +210,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
         "avatar" -> JsString(imageUrl),
         "message" -> JsString(text),
         "members" -> JsArray(ChatRoom.members.map(JsString))))
+    Logger.debug("Notify all " + username + "-" + text)
     Akka.system.eventStream.publish(ChatMessage(msg))
   }
 }

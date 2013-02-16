@@ -58,10 +58,17 @@ object Application extends Controller {
    */
   def chatRoom = Action {
     implicit request =>
-      val userid = request.session.get("userid").getOrElse("Guest" + ChatRoom.nbUsers.toString)
+      val userid = request.session.get("userid").getOrElse(newUserid)
       if (Akka.system.actorFor("/user/" + userid).isTerminated)
         ChatRoom.join(userid)
       Ok(views.html.chatRoom(userid, "")) withSession ("userid" -> userid)
+  }
+
+  def newUserid: String = {
+    var n = ChatRoom.nbUsers
+    while (ChatRoom.members.contains("Guest" + n.toString))
+      n += 1
+    "Guest" + n.toString
   }
 
   def twitterLogin = Action {
@@ -107,6 +114,7 @@ object Application extends Controller {
       (memberActor ? Connect()).map {
 
         case Connected(enumerator) =>
+          Logger.debug("Connecté " + userid)
 
           // Create an Iteratee to consume the feed
           val iteratee = Iteratee.foreach[JsValue] {
@@ -120,6 +128,7 @@ object Application extends Controller {
           (iteratee, enumerator)
 
         case CannotConnect(error) =>
+          Logger.debug("Erreur de connexion pour " + userid + " -> " + error)
 
           // Connection error
           // A finished Iteratee sending EOF
