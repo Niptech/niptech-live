@@ -2,6 +2,7 @@
 * *Auteur* : [Fabrice Croiseaux](http://twitter.com/fXzo)
 * *Technologies* : Play 2.1, Scala
 
+![Live Chat Thumbnail](http://live.niptech.com/assets/images/Thumbnail_tr.png)
 Cette application gère un **chat live** ainsi que la **diffusion d'un flux youtube** sur la même page.
 
 ## ADMINISTRATION
