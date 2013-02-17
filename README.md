@@ -1,6 +1,6 @@
+# Application Live Chat pour NipTech
 ![Live Chat Thumbnail](./public/images/Thumbnail_tr.png)
 
-# Application Live Chat pour NipTech
 * *Auteur* : [Fabrice Croiseaux](http://twitter.com/fXzo)
 * *Technologies* : Play 2.1, Scala
 
