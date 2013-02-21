@@ -6,15 +6,15 @@ import scala.util.Random
 import play.api._
 
 import cache.Cache
+
 import play.api.libs.json._
 import play.api.libs.iteratee._
 import play.api.libs.concurrent._
 
-import play.api.Play.current
+import play.api.Play._
 import play.api.libs.concurrent.Execution.Implicits._
 import twitter4j._
-
-
+import com.typesafe.config.ConfigFactory
 
 
 class Member(var userid: String, var username: String, var imageUrl: String) extends Actor {
@@ -28,6 +28,16 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
   var isConnected = false
 
   val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
+
+  def addHyperlink(text: String): String =
+    text match {
+      case htext if text.contains("http://") =>
+        val hstart = htext.indexOf("http://")
+        val hend = if (htext.indexOf(' ', hstart) == -1) htext.size else htext.indexOf(' ', hstart)
+        val url = htext.substring(hstart, hend)
+        htext.replace(url, "<a href='" + url + "' target=_blank>" + url + "</a>")
+      case _ => text
+    }
 
   def receive = {
 
@@ -65,7 +75,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
           self ! ChangeName(text.takeRight(text.size - 9), None)
 
         case _ =>
-          notifyAll("talk", text)
+          notifyAll("talk", addHyperlink(text))
           if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
             try {
               TwitterClient.twitter.updateStatus((username.takeRight(username.size - 1) + " - " + text).take(140))
@@ -121,36 +131,12 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
 
 class Robot(username: String) extends Member(username, username, "") {
 
-  val quotes = List(
-    "A great person attracts great people and knows how to hold them together.?Johann Wolfgang Von Goethe",
-    "A man is but the product of his thoughts what he thinks, he becomes.?Ghandi",
-    "Motivation is the art of getting people to do what you want them to do because they want to do it. Eisenhower",
-    "Hire character. Train skill. Peter Schutz",
-    "The more you lose yourself in something bigger than yourself, the more energy you will have. Norman Peale",
-    "Some men see things as they are and say, ‘Why’? I dream of things that never were and say, ‘Why not’? Robert Kennedy",
-    "What the mind can conceive, the mind can achieve. Napoleon Hill",
-    "Do not expect something for nothing. Be willing to give an equivalent value for all that you desire. Napoleon Hill",
-    "It’s better to be king of your world, rather than a peasant in another man’s land. Satya Hanif",
-    "The future belongs to those who believe in the beauty of their dreams. Eleanor Roosevelt",
-    "Yesterday’s home runs don’t win today’s games. Babe Ruth",
-    "Logic will get you from A to B. Imagination will take you everywhere. Albert Einstein",
-    "It’s not that I’m so smart, it’s just that I stay with the problems longer. Albert Einstein",
-    "Every sale has five basic obstacles: no need, no money, no hurry, no desire, no trust. Zig Ziglar",
-    "All good leadership skills can be boiled down to 2 categories: Capacity to Connect & Capacity to Initiate Skillful Change. Bill_Gross",
-    "A stumbling block to the pessimist is a stepping stone to the optimist.",
-    "When you do the common things in life in an uncommon way, you will command the attention of the world. George Washington Carver",
-    "Excuses are the nails used to build a house of failure. Dan Wilder",
-    "If you want to fly, you have to give up the things that weigh you down. Unknown",
-    "The primary cause of unhappiness is never the situation but your thoughts about it. Eckhart Tolle",
-    "Failure + failure + failure = success. You only fail when you quit. Jack Hyles",
-    "Don’t measure yourself by what you have accomplished, but by what you should have accomplished with your ability. John Wooden",
-    "Luck is what happens when preparation meets opportunity. Unknown",
-    "Choose a job you love and you will never have to work a day in your life. Confucius",
-    "You were born with wings. Why prefer to crawl through life? Jalaluddin Rumi")
+  def quotes = ConfigFactory.load("niptechquotes").getStringList("quotes")
+
 
   override def receive = {
     case SayQuote() => {
-      val quote = quotes(new Random(new java.util.Date().getTime()).nextInt(quotes.size - 1))
+      val quote = quotes.get(new Random(new java.util.Date().getTime()).nextInt(quotes.size - 1))
       notifyAll("talk", quote)
     }
   }

@@ -13,8 +13,12 @@ import akka.pattern.ask
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
 import twitter4j._
+import scala.collection.JavaConversions._
 
 import scala.collection
+import com.typesafe.config.ConfigFactory
+import play.libs.Json._
+import java.io.FileWriter
 
 
 object ChatRoom {
@@ -35,6 +39,7 @@ object ChatRoom {
 
   def join(username: String) = {
     members += username
+    Logger.info(members.size.toString + " membre connectés")
     val memberActor = Akka.system.actorOf(Props(new Member(username, username, "")), username)
     val r = Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
     Akka.system.scheduler.schedule(
@@ -68,35 +73,49 @@ object ChatRoom {
 
     val listener = new StatusListener() {
       @Override
-      def onStatus(st: Status) = twitterActor ! Tweet(st)
+      def onStatus(st: Status) = {
+        twitterActor ! Tweet(st)
+        val text = st.getText
+        if (text.contains("#quote")) {
+          Logger.info("NEW QUOTE : " + st.getText)
+          val quotes = ConfigFactory.load("niptechquotes").getStringList("quotes")
+          quotes.add(st.getText)
+          val writer = new FileWriter("./niptech-live/niptechquotes.conf")
+          writer.write("quotes = [")
+          val content = quotes.toList.map(quote => "\"" + quote + "\"").mkString(",\r\n") + "]"
+          Logger.info(content)
+          writer.write(content)
+          writer.close()
+        }
+      }
 
       @Override
       def onDeletionNotice(st: StatusDeletionNotice) = {
-        System.out.println("Got a status deletion notice id:" + st.getStatusId())
+        Logger.info("Got a status deletion notice id:" + st.getStatusId())
       }
 
       @Override
       def onTrackLimitationNotice(numberOfLimitedStatuses: Int) = {
-        System.out.println("Got track limitation notice:" + numberOfLimitedStatuses)
+        Logger.info("Got track limitation notice:" + numberOfLimitedStatuses)
       }
 
       @Override
       def onScrubGeo(userId: Long, upToStatusId: Long) = {
-        System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId)
+        Logger.info("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId)
       }
 
       @Override
       def onStallWarning(warning: StallWarning) {
-        System.out.println("Got stall warning:" + warning);
+        Logger.info("Got stall warning:" + warning);
       }
 
       @Override
-      def onException(ex: Exception) {
-        ex.printStackTrace()
+      def onException(exc: Exception) {
+        Logger.error("Exception on Twitter stream", exc)
       }
     }
     twitterStream.addListener(listener)
-    twitterStream.filter(new FilterQuery(0, Array[Long](), Array[String]("niptechlive")));
+    twitterStream.filter(new FilterQuery(0, Array[Long](), Array[String]("niptechlive", "#quote #niptech")))
   }
 
   def nbUsers: Int = members.size
