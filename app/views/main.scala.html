@@ -23,7 +23,7 @@
         <div class="topbar">
             <div>
                 <div class="container">
-                    <img class="" style="margin-left:50px;" src="@routes.Assets.at("images/niptech.png")"></img>
+                    <img class="" style="margin-left:50px;" src="@routes.Assets.at("images/niptech.png")">
                     @user.map { username =>
                         <p class="pull-right">
                             <a href="@routes.Application.doLogout()">Disconnect</a>

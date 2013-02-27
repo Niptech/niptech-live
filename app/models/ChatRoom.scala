@@ -37,10 +37,11 @@ object ChatRoom {
 
   }
 
-  def join(username: String) = {
+  def join(userid: String) = {
+    var username = newUserid
     members += username
     Logger.info(members.size.toString + " membre connectés")
-    val memberActor = Akka.system.actorOf(Props(new Member(username, username, "")), username)
+    val memberActor = Akka.system.actorOf(Props(new Member(userid, username, "")), userid)
     val r = Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
     Akka.system.scheduler.schedule(
       30 seconds,
@@ -49,6 +50,14 @@ object ChatRoom {
       CheckTimeout())
     Logger.info(username + " vient de rejoindre la chatroom")
     memberActor
+  }
+
+
+  def newUserid: String = {
+    var n = 1
+    while (members.contains("Guest" + n.toString))
+      n += 1
+    "Guest" + n.toString
   }
 
   def robot = {

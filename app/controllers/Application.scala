@@ -64,12 +64,7 @@ object Application extends Controller {
       Ok(views.html.chatRoom(userid, "")) withSession ("userid" -> userid)
   }
 
-  def newUserid: String = {
-    var n = 1
-    while (!Akka.system.actorFor("/user/" + "Guest" + n.toString).isTerminated)
-      n += 1
-    "Guest" + n.toString
-  }
+  def newUserid = new java.util.Date().getTime().toString
 
   def twitterLogin = Action {
     implicit request =>
