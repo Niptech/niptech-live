@@ -69,6 +69,10 @@
 
     <br/><br/>
     <br/>
+    <div style="text-align: center;">
+        <button class="btn btn-primary" name="twitterShare" id="twitterShare">Share on Twitter</button>
+    </div>
+
     <footer>
             <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by/3.0/deed.fr"><img alt="Licence Creative Commons" style="border-width:0;text-align:center;" src="http://i.creativecommons.org/l/by/3.0/88x31.png" /></a>
     </footer>
@@ -137,6 +141,10 @@
                     {text: $("#talk").val()}
                 ))
                 $("#talk").val('')
+            }
+
+            var shareOnTwitter = function() {
+             sendText("shareOnTwitter:")
             }
 
             var sendText = function(textMsg) {
@@ -230,6 +238,14 @@
                     sendText("nickname:" + username)
                 }
                 $("#changeuser").modal('hide')
+                updateDisplay()
+            }
+
+            var updateDisplay = function() {
+                if (myname.indexOf("@@") != -1)
+                    $('#twitterShare').show()
+                else
+                    $('#twitterShare').hide()
             }
 
             var handleUsernameReturnKey = function(e) {
@@ -241,11 +257,14 @@
 
             $("#username").keypress(handleUsernameReturnKey)
             $("#changeButton").click(changeUsername)
+            $("#twitterShare").click(shareOnTwitter)
             $("#username").focus()
 
             var myname = "@ChatRoom.username(username)"
 
-            showMsg("Connecté en tant que @ChatRoom.username(username)")
+            showMsg("Connecté en tant que " + myname)
+
+            updateDisplay()
 
         })
             // TODO intégrer les smileys

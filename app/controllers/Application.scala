@@ -143,11 +143,11 @@ object Application extends Controller {
   }
 
   def doLogin = Action(parse.urlFormEncoded) {
-    request =>
+    implicit request =>
       request.body("password").headOption match {
         case Some(password) =>
           if (users.contains(password))
-            Redirect("/admin").withSession(("admin", password))
+            Redirect("/admin").withSession(session + ("admin", password))
           else
             Ok(views.html.login(Some("Password invalide")))
         case _ => Ok(views.html.login(Some("Password invalide")))

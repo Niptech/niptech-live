@@ -69,9 +69,12 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       connectedDeadline = connectedTimeout.fromNow
       disconnectedDeadline = disconnectedTimeout.fromNow
       text match {
-        case save if save startsWith ("save:") =>
+        case save if text startsWith ("save:") =>
           Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
-        case changeuser if changeuser startsWith ("nickname:") =>
+        case share if text startsWith ("shareOnTwitter:") =>
+          Logger.debug("Sharing on twitter")
+          Cache.getAs[Twitter](username).foreach(t => t.updateStatus("Rejoignez nous sur http://live.niptech.com et suivez @niptechpodcast en direct".take(140)))
+        case changeuser if text startsWith ("nickname:") =>
           self ! ChangeName(text.takeRight(text.size - 9), None)
 
         case _ =>
