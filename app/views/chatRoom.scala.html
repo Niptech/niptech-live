@@ -67,10 +67,28 @@
         </div>
     </div>
 
+
+    <div id="shareDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="shareLabel" aria-hidden="true">
+        <div class="modal-header">
+            <h3>Partager sur Twitter</h3>
+        </div>
+        <div class="modal-body">
+            <textarea rows="2" cols="100" name="shareMsg" id="shareMsg"
+            style="margin-top: 10px;
+                    width: 500px;
+                    height: 50px;
+                    font-family: Trebuchet, Arial, sans-serif;">Rejoignez nous sur http://live.niptech.com et suivez @@niptechpodcast en direct.</textarea>
+            <span id="msgLen" name="msgLen">79 car<span>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" name="tweetButton" id="tweetButton" style="height: 45px; font-size: 23px;">Share</button>
+        </div>
+    </div>
+
     <br/><br/>
     <br/>
     <div style="text-align: center;">
-        <button class="btn btn-primary" name="twitterShare" id="twitterShare">Share on Twitter</button>
+        <button class="btn btn-primary" name="twitterShare" id="twitterShare" onCLick="openShareDialog()" >Share on Twitter</button>
     </div>
 
     <footer>
@@ -128,6 +146,10 @@
             $("#username").focus()
         }
 
+        function openShareDialog() {
+            $('#shareDialog').modal()
+        }
+
         var allMembers = [];
 
 
@@ -144,7 +166,9 @@
             }
 
             var shareOnTwitter = function() {
-             sendText("shareOnTwitter:")
+                var msg = $('#shareMsg').val()
+                sendText("shareOnTwitter:"+ msg)
+                $("#shareDialog").modal('hide')
             }
 
             var sendText = function(textMsg) {
@@ -193,7 +217,7 @@
                         $("#members").append('<li>' + this + '</li>')
                     else
                         $("#members").append('<li><strong>' + this + '</strong></li>')
-            })
+                })
 
                 //Update the members number
                 $("#members-title").html(data.members.length + ' Membres')
@@ -248,6 +272,17 @@
                     $('#twitterShare').hide()
             }
 
+            var testTweetLength = function() {
+                var shrMsg = $('#shareMsg').val()
+                var msgL = shrMsg.length
+                if (msgL > 140) {
+                    shrMsg = shrMsg.substr(0, 140)
+                    msgL = 140
+                    $('#shareMsg').val(shrMsg)
+                }
+                $('#msgLen').text(msgL + " car")
+            }
+
             var handleUsernameReturnKey = function(e) {
             if(e.charCode == 13 || e.keyCode == 13) {
                     e.preventDefault()
@@ -257,7 +292,8 @@
 
             $("#username").keypress(handleUsernameReturnKey)
             $("#changeButton").click(changeUsername)
-            $("#twitterShare").click(shareOnTwitter)
+            $("#tweetButton").click(shareOnTwitter)
+            $("#shareMsg").keyup(testTweetLength)
             $("#username").focus()
 
             var myname = "@ChatRoom.username(username)"
