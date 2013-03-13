@@ -19,18 +19,17 @@
     <div class="row">
         <div class="span6">
             <div id="ytplayer"></div>
-            <button class="btn btn-primary" id="reloadvideo" onclick="reloadVideo()">Synchronisation avec le direct</button>
+            <a class="nip-button" style="padding: 10px 0px;" id="reloadvideo" onclick="reloadVideo()">Synchronisation avec le direct</a>
+            <a class="nip-button" style="padding: 10px 0px; float:right;" name="twitterShare" id="twitterShare" onCLick="openShareDialog()" >Share on Twitter</a>
         </div>
         <div class="span5" style="margin-left: 10px;">
             <div id="onChat">
-                <div id="main" style="height:390px;">
+                <div id="main" style="height:400px;">
                     <div id="messages">
                     </div>
-                    <textarea id="talk" style="width: 360px;"></textarea>
+                    <textarea id="talk"></textarea>
                 </div>
             </div>
-            <button class="btn btn-primary" id="changeUserButton" onclick="changeNickname()">Change nickname</button>
-            <a class="btn btn-primary" id="connectTwitter" href="@routes.Application.twitterLogin()">Connexion avec Twitter</a>
             <div class="alert alert-success fade in" id="infomsg" style="display: none">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <span></span>
@@ -38,14 +37,19 @@
             <div class="alert alert-error fade in" id="errormsg" style="display: none">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 <span></span>
-            </div>        </div>
-        <div class="span2" style="border-bottom: 2px solid #aaa; margin-left: 10px;">
-            <h4 id="members-title" style="margin-top:0px;">@ChatRoom.members.length Membres</h4>
-            <ul id="members">
-                @for(member <- ChatRoom.members) {
-                    <li>@member</li>
-                }
-            </ul>
+            </div>
+        </div>
+        <div class="span2">
+           <div id="members-list">
+                <div id="members-title">@ChatRoom.members.length Membres</div>
+                <div id="members">
+                    @for(member <- ChatRoom.members) {
+                        <span>@member</span><br/>
+                    }
+                </div>
+            </div>
+            <a class="nip-button" id="connectTwitter" href="@routes.Application.twitterLogin()">Connexion via Twitter</a>
+            <a class="nip-button" id="changeUserButton" onclick="changeNickname()">Changer de pseudo</a>
         </div>
     </div>
 
@@ -63,7 +67,7 @@
                     font-weight: bold;">
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" name="changeButton" id="changeButton" style="height: 45px; font-size: 23px;">Change</button>
+            <a class="nip-button nip-dialog" style="font-size: 30px; padding: 20px 0px;" name="changeButton" id="changeButton">Change</a>
         </div>
     </div>
 
@@ -81,15 +85,12 @@
             <span id="msgLen" name="msgLen">79 car<span>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" name="tweetButton" id="tweetButton" style="height: 45px; font-size: 23px;">Share</button>
+            <a class="nip-button nip-dialog" style="font-size: 30px; padding: 20px 0px;" name="tweetButton" id="tweetButton">Share</a>
         </div>
     </div>
 
     <br/><br/>
     <br/>
-    <div style="text-align: center;">
-        <button class="btn btn-primary" name="twitterShare" id="twitterShare" onCLick="openShareDialog()" >Share on Twitter</button>
-    </div>
 
     <footer>
             <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by/3.0/deed.fr"><img alt="Licence Creative Commons" style="border-width:0;text-align:center;" src="http://i.creativecommons.org/l/by/3.0/88x31.png" /></a>
@@ -191,7 +192,7 @@
                 }
 
                 // Create the message element
-                var el = $('<div class="message"><span></span><em style="font-size:10px; color:#aaa"></em><img src="' + data.avatar + '" class="pull-right" style="margin-right: 10px;"></img><br/></div>')
+                var el = $('<div class="message"><img src="' + data.avatar + '" style="margin-right: 10px;"></img><span></span><em style="font-size:10px; color:#aaa"></em><br/></div>')
                 $("span", el).text(data.user)
                 var now = new Date()
                 var min = now.getMinutes() + ""
@@ -214,9 +215,9 @@
                 allMembers = data.members
                 $(data.members).each(function() {
                     if (this != myname)
-                        $("#members").append('<li>' + this + '</li>')
+                        $("#members").append('<span>' + this + '</span></br>')
                     else
-                        $("#members").append('<li><strong>' + this + '</strong></li>')
+                        $("#members").append('<span><strong>' + this + '</strong></span></br>')
                 })
 
                 //Update the members number
