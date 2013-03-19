@@ -28,8 +28,14 @@
             <a class="nip-button" style="margin-left:10px; padding: 10px 10px;" id="reloadvideo" onclick="reloadVideo()">Synchroniser avec le direct</a>
                 <span name="twitterShare" id="twitterShare" class="pull-right" style="margin-right:20px; margin-top: 10px; font-family: Hero; color: rgb(131,131,131); font-size: 18px;">
                 Partager
-                <a onCLick="openShareDialog()" style="margin-left: 5px;">
+                <a href="https://twitter.com/intent/tweet?button_hashtag=nwlive&text=Rejoignez+nous+sur+la+chatroom+et+suivez+@@niptechpodcast+en+direct.&url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
                     <img src="@routes.Assets.at("images/twtr-nt.png")">
+                </a>
+                <a href="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flive.niptech.com&p[summary]=Rejoignez+nous+sur+la+chatroom+et+suivez+le+live+niptech+en+direct" target="_blank" style="margin-left: 5px;">
+                    <img src="@routes.Assets.at("images/fb-nt.png")">
+                </a>
+                <a href="https://plus.google.com/share?url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
+                    <img src="@routes.Assets.at("images/gplus-nt.png")">
                 </a>
                 </span>
             </div>
@@ -95,29 +101,14 @@
         </div>
     </div>
 
-
-    <div id="shareDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="shareLabel" aria-hidden="true">
-        <div class="modal-header">
-            <h3>Partager sur Twitter</h3>
-        </div>
-        <div class="modal-body">
-            <textarea rows="2" cols="100" name="shareMsg" id="shareMsg"
-            style="margin-top: 10px;
-                    width: 500px;
-                    height: 50px;
-                    font-family: Trebuchet, Arial, sans-serif;">Rejoignez nous sur http://live.niptech.com et suivez @@niptechpodcast en direct.</textarea>
-            <span id="msgLen" name="msgLen">79 car<span>
-        </div>
-        <div class="modal-footer">
-            <a class="nip-button nip-dialog" style="font-size: 30px; padding: 20px 0px;" name="tweetButton" id="tweetButton">Share</a>
-        </div>
-    </div>
     </br>
 
     <footer style="text-align: center; font-size: 12px;">
-        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com" target="_blank">niptech podcast</a>
-        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/category/blog/" target="_blank">niptech blog</a>
-        <a style="margin: 15px; text-decoration: underline;" href="https://plus.google.com/u/0/communities/104157063722839703523" target="_blank">niptech community</a>
+        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/niptech-podcast/" target="_blank">le podcast</a>
+        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/category/emissions/" target="_blank">les émissions</a>
+        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/category/blog/" target="_blank">le blog</a>
+        <a style="margin: 15px; text-decoration: underline;" href="http://inspire.niptech.com/" target="_blank">les quotes</a>
+        <a style="margin: 15px; text-decoration: underline;" href="https://plus.google.com/u/0/communities/104157063722839703523" target="_blank">la communauté</a>
         <a style="margin: 15px; text-decoration: underline;" href="https://github.com/Niptech/niptech-live" target="_blank">fork me on github</a>
     </footer>
 
@@ -172,10 +163,6 @@
             $("#username").focus()
         }
 
-        function openShareDialog() {
-            $('#shareDialog').modal()
-        }
-
         var allMembers = [];
 
 
@@ -189,12 +176,6 @@
                     {text: $("#talk").val()}
                 ))
                 $("#talk").val('')
-            }
-
-            var shareOnTwitter = function() {
-                var msg = $('#shareMsg').val()
-                sendText("shareOnTwitter:"+ msg)
-                $("#shareDialog").modal('hide')
             }
 
             var sendText = function(textMsg) {
@@ -290,23 +271,6 @@
                 updateDisplay()
             }
 
-            var updateDisplay = function() {
-                if (myname.indexOf("@@") != -1)
-                    $('#twitterShare').show()
-                else
-                    $('#twitterShare').hide()
-            }
-
-            var testTweetLength = function() {
-                var shrMsg = $('#shareMsg').val()
-                var msgL = shrMsg.length
-                if (msgL > 140) {
-                    shrMsg = shrMsg.substr(0, 140)
-                    msgL = 140
-                    $('#shareMsg').val(shrMsg)
-                }
-                $('#msgLen').text(msgL + " car")
-            }
 
             var handleUsernameReturnKey = function(e) {
             if(e.charCode == 13 || e.keyCode == 13) {
@@ -317,13 +281,9 @@
 
             $("#username").keypress(handleUsernameReturnKey)
             $("#changeButton").click(changeUsername)
-            $("#tweetButton").click(shareOnTwitter)
-            $("#shareMsg").keyup(testTweetLength)
             $("#username").focus()
 
             var myname = "@ChatRoom.username(username)"
-
-            updateDisplay()
 
         })
 
