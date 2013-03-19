@@ -81,7 +81,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
           notifyAll("talk", addHyperlink(text))
           if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
             try {
-              TwitterClient.twitter.updateStatus((username.takeRight(username.size - 1) + " - " + text).take(140))
+              TwitterClient.twitter.updateStatus((username + " - " + text).take(140))
             }
             catch {
               case exc: Throwable => Logger.error(exc.getMessage)

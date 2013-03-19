@@ -88,7 +88,7 @@ object ChatRoom {
         if (text.contains("#quote")) {
           Logger.info("NEW QUOTE : " + st.getText)
           val quotes = ConfigFactory.load("niptechquotes").getStringList("quotes")
-          quotes.add(st.getText)
+          quotes.add(st.getText.replaceAll("\"",""))
           val writer = new FileWriter("./niptech-live/niptechquotes.conf")
           writer.write("quotes = [")
           val content = quotes.toList.map(quote => "\"" + quote + "\"").mkString(",\r\n") + "]"

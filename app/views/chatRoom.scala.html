@@ -64,7 +64,7 @@
         <div class="span2" style="margin-left: 0px; border-left: 1px solid lightgray; width:19.1%">
             <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
                 <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">
-                        En ligne : <span style="color:black;">@ChatRoom.members.length pers.</span>
+                        En ligne : <span id="members-nbr" style="color:black;">@ChatRoom.members.length pers.</span>
                 </span>
             </div>
            <div id="members-list">
@@ -226,7 +226,7 @@
                 })
 
                 //Update the members number
-                $("#members-title").html(data.members.length + ' Membres')
+                $("#members-nbr").html(data.members.length + ' pers.')
 
             }
 
