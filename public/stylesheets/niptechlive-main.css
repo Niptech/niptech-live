@@ -15,31 +15,13 @@ h1, h2, h3, h4, h5 {
     width: 1020px; /* downsize our container to make the content feel a bit tighter and more cohesive. NOTE: this removes two full columns from the grid, meaning you only go to 14 columns and not 16. */
 }
 
-/* The white background content wrapper */
-.content {
-    background-color: #fff;
-    padding: 20px;
-    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
-    min-height: 10px;
-}
+
 
 /* Page header tweaks */
 .page-header {
     background-color: #fff;
     padding: 20px 20px 10px;
     margin: -20px -20px 20px;
-}
-
-/* Styles you shouldn't keep as they are for displaying this base example only */
-.content .span10,
-.content .span4 {
-    min-height: 500px;
-}
-
-/* Give a quick and non-cross-browser friendly divider */
-.content .span4 {
-    padding-left: 9px;
-    margin-left: 10px;
 }
 
 .topbar .btn {
@@ -65,15 +47,19 @@ h1, h2, h3, h4, h5 {
 
 #onChat {
     color: black;
+    border-right: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
+    height: 480px;
+    background-color: white;
 }
 
 #messages {
     position: absolute;
     bottom: 75px;
     overflow-y: scroll;
-    border-bottom: 1px solid #eee;
-    background-color: #F0F0F0;
-    height: 325px;
+    background-color: white;
+    height: 405px;
+    width: 100%
 }
 
 #talk {
@@ -81,11 +67,12 @@ h1, h2, h3, h4, h5 {
     bottom: 0;
     left: 0;
     right: 0;
+    margin-left: 5%;
     height: 40px;
     font-size: 14px;
-    font-family: lato, sans-serif;
+    font-family: "Trebuchet MS";
     font-weight: 300;
-    width: 364px;
+    width: 86%;
     border-radius: 0px;
     border-width: 2px;
 }
@@ -93,9 +80,12 @@ h1, h2, h3, h4, h5 {
 .message {
     padding: 4px 0;
     position: relative;
-    font-size: 14px;
-    font-family: lato, sans-serif;
-    font-weight: 300;
+    font-size: 11px;
+    font-family: "Trebuchet MS";
+    width: 91%;
+    margin-left: 7%;
+    margin-top: 10px;
+    background-color: rgb(247,247,247);
 }
 
 .message span {
@@ -110,14 +100,20 @@ h1, h2, h3, h4, h5 {
     vertical-align: top;
     position: relative;
     top: -1px;
+    color: rgb(133,133,133);
 }
 
 .message p {
     display: inline-block;
     margin: 0;
-    width: 380px;
+    width: 100%;
     margin-left: 5px;
-    border-bottom: 1px solid #C0C0C0;
+}
+
+.message em {
+    margin-right:10px;
+    float:right;
+    color:rgb(133,133,133);
 }
 
 .message.me {
@@ -132,12 +128,13 @@ h1, h2, h3, h4, h5 {
     bottom: 75px;
     overflow-y: scroll;
     border-bottom: 1px solid #eee;
-    background-color: #F0F0F0;
-    height: 325px;
-    width: 179px;
+    background-color: white;
+    height: 480px;
+    width: 100%;
     color: black;
-    font-family: lato, sans-serif;
-    font-weight: 300;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    border-bottom: 1px solid lightgray;
 }
 
 #members-title {
@@ -151,39 +148,37 @@ h1, h2, h3, h4, h5 {
 
 #members {
     margin-left: 20px;
-    font-size: 13px;
 }
 
 .nip-button {
-    color: black;
-    font-family: lato, sans-serif;
-    font-weight: 900;
+    color: white;
+    font-family: "Trebuchet MS";
+    font-weight: 300;
     border-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.25);
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background-color: #F0F0F0;
+    background-color: rgb(43,134,203);
     border-color: #BBBBBB #BBBBBB #A2A2A2;
     border-image: none;
     border-radius: 0px;
     cursor: pointer;
     display: inline-block;
-    font-size: 12px;
+    font-size: 15px;
     line-height: 15px;
     margin-top: 10px;
     margin-bottom: 0px;
-    padding: 4px 0px;
+    padding: 4px 10px;
     text-align: center;
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    /* text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);   */
     vertical-align: middle;
     text-decoration: none;
-    width: 179px;
 }
 
 .nip-button:hover {
     text-decoration: none;
-    color: black;
+    color: white;
 }
 
 .nip-dialog {
