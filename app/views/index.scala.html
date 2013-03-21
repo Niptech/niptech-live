@@ -1,0 +1,66 @@
+@(helloForm: Form[(String,Int,Option[String])])
+
+@import helper._
+
+@main(title = "The 'helloworld' application") {
+
+    <h1>Configure your 'Hello world':</h1>
+
+    @form(action = routes.Application.sayHello, args = 'id -> "helloform") {
+
+        @inputText(
+            field = helloForm("name"),
+            args = '_label -> "What's your name?", 'placeholder -> "World"
+        )
+
+        @inputText(
+            field = helloForm("repeat"),
+            args = '_label -> "How many times?", 'size -> 3, 'placeholder -> 10
+        )
+
+        @select(
+            field = helloForm("color"), 
+            options = options(
+                "" -> "Default",
+                "red" -> "Red",
+                "green" -> "Green",
+                "blue" -> "Blue"
+            ),
+            args = '_label -> "Choose a color"
+        )
+
+        <p class="buttons">
+            <input type="submit" id="submit">
+        <p>
+        
+
+  <!-- this is used for first time display of clickstart - a template-->
+  <div id="clickstart_content" style="display:none">
+     <p>
+      Congratulations, <a href="#CS_appManageUrl"><span>#CS_appName</span></a>, your <a href="#CS_docUrl"><span>#CS_name</span></a> application is now running.<br />
+      To modify it, take the following steps to clone the source repository:
+    </p>
+
+    <div class="CB_codeSample">
+      git clone #CS_source #CS_appName<br/>
+          cd #CS_appName<br/>
+          ---- do your magic edits ----<br/>
+          git commit -m 'This is now even better !'<br/>
+          git push origin master
+    </div>
+
+    <p>Manage your application components at the following URLs:</p>
+    <ul>
+      <li><strong>Core application:</strong> <a href="#CS_appManageUrl">#CS_appManageUrl</a></li>
+      <li><strong>Database:</strong> <a href="#CS_appManageUrl">#CS_appManageUrl</a></li>
+      <li><strong>Jenkins Build System:</strong> <a href="#CS_appManageUrl">#CS_appManageUrl</a></li>
+    </ul>
+  </div>
+
+  <script type="text/javascript" src="https://s3.amazonaws.com/cloudbees-downloads/clickstart/clickstart_intro.js"></script>
+  <!-- end clickstart intro section -->
+        
+
+    }
+
+}
