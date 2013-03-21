@@ -1,61 +1,32 @@
-#  Play 2 Hello World clickstart
+# Application Live Chat pour NipTech
+![Live Chat Thumbnail](./public/images/Thumbnail_tr.png)
 
-This clickstart sets up a SBT build service, repository and a basic Play 2 application.
+* *Auteur* : [Fabrice Croiseaux](http://twitter.com/fXzo)
+* *Technologies* : Play 2.1, Scala
 
-<a href="https://grandcentral.cloudbees.com/?CB_clickstart=https://raw.github.com/CloudBees-community/play2-clickstart/master/clickstart.json"><img src="https://d3ko533tu1ozfq.cloudfront.net/clickstart/deployInstantly.png"/></a>
+Cette application gère un **chat live** ainsi que la **diffusion d'un flux youtube** sur la même page.
 
-Launch this clickstart and glory could be yours too ! Use it as a building block if you like.
+## ADMINISTRATION
+L'administration consiste à indiquer l'id du flux youtube à diffuser et à activer ou désactiver le live stream Twitter.
+La page d'administration est sécurisée et est accessible à http://live.niptech.com/admin
+* Pour démarrer le chat, cliquer sur le bouton rouge **Off Air** et indiquer l'id du flux youtube
+* L'activation/désactivation du twitter live stream se fait via le bouton éponyme.
+* Pour appliquer les modifications, cliquer sur **Appliquer**
 
-You can launch this on Cloudbees via a clickstart automatically, or follow the instructions below. 
+## FLUX YOUTUBE
+Le bouton synchroniser le direct permet à l'utilisateur de se resynchroniser avec le direct sans avoir à recharger toute la page.
+Ceci est utile quand la connection est mauvaise et que le flux youtube s'est désynchronisé avec le direct pour ne pas perdre d'informations.
 
-# Deploying manually: 
-
-## To build and deploy this on CloudBees, follow those steps:
-
-Create application:
-
-    bees app:create MYAPP_ID
-
-Create a new software project in Jenkins, changing the following:
-
-* Add this git repository (or yours, with this code) on Jenkins
-* Change JDK to:
-    
-        Oracle JDK 1.7 (Latest)
-    
-* Add an "Execute Shell" build step with:
-    
-        java -Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=384M -jar /opt/sbt/sbt-launch-0.11.3-2.jar -Dsbt.log.noformat=true dist
-    
-* Also add a post-build step "Deploy to CloudBees" with those parameters:
-
-        Applications: First Match
-        Application Id: MYAPP_ID
-        Filename Pattern: dist/*.zip
-    
-Then finally update your application from your own computer:
-    
-    bees config:set -a MYAPP_ID -Rjava_version=1.7 containerType=play2 proxyBuffering=false
-    bees app:restart MYAPP_ID
-
-## To build this locally:
-
-You will need play2 installed, or sbt (this jenkins build currently uses SBT).
-
-In the play2-clickstart directory, open a command line, and then type:
-
-    play dist
-
-Then deploy it on cloudbees typing:
-
-    bees app:deploy -a MYAPP_ID -t play2 -Rjava_version=1.7 dist/*.zip proxyBuffering=false
-
-## To run this locally:
+## TWITTER LIVESTREAM
+Le Twitter LiveStream permet aux utilisateurs du chat d'interagir avec Twitter :
+* Si sur twitter, un message contenant @niptechlive est posté, il s'affiche dans la chat room. Ainsi, ceux qui n'ont pas la possibilité d'assister au live peuvent envoyer des messages aux personnes présentes.
+* Si la fonctionnalité est activée par Ben, tous les messages du live peuvent être diffusés en temps réel sur Twitter.
+Ils sont postés par l'utilisateur @niptechlive.
+* Un utilisateur peut se connecter via OAuth et son compte twitter, son avatar s'affiche dans la chat room. Un utilisateur
+connecté avec son compte twitter peut sauvegarder des informations en tapant le mot clé save: suivi d'un texte dans la chatroom Le texte ne
+s'affiche pas mais il est envoyé en tant que direct message à l'utilisatur connecté.
 
 
-You will need a locally running MySQL server for this instance. 
+## Licensing
+<a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.fr"><img alt="Licence Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Niptech Chat Room</span> est mis à disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.fr">licence Creative Commons Attribution 3.0 non transposé</a>.
 
-
-Use the following command, and then browse to localhost:9000
-
-    play run

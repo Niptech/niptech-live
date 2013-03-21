@@ -1,0 +1,295 @@
+@(username: String, twitterId: String)(implicit request: RequestHeader)
+
+@import play.api.cache.Cache
+@import play.api.Play.current
+@import models.ChatRoom
+
+@getYouTubeId() = @{
+    Cache.getOrElse[String]("youtubeid") {""}
+}
+
+@main(Some(username)) {
+
+    <div id="onError" class="alert-message error">
+        <p>
+            <strong>Oops!</strong> <span></span>
+        </p>
+    </div>
+
+    <div class="row-fluid" style="background-image: url('@routes.Assets.at("images/bg-niptech.png")');">
+        <div class="span1" style="height: 400px;"></div>
+        <div class="span5" style="margin-left: 0px; border-left: 1px solid lightgray;">
+            <div style="height: 45px; background-color: white">
+                <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">Video board</span>
+                <span style="float:right; font-size: 18px; margin-top:18px;margin-right:5px;)">niptech 175</span>
+            </div>
+            <div id="ytplayer" style="height: 350px;"></div>
+            <div style="border-bottom: 1px solid lightgray; padding-bottom: 10px; background-color: white">
+            <a class="nip-button" style="margin-left:10px; padding: 10px 10px;" id="reloadvideo" onclick="reloadVideo()">Synchroniser avec le direct</a>
+                <span name="twitterShare" id="twitterShare" class="pull-right" style="margin-right:20px; margin-top: 10px; font-family: Hero; color: rgb(131,131,131); font-size: 18px;">
+                Partager
+                <a href="https://twitter.com/intent/tweet?button_hashtag=nwlive&text=Rejoignez+nous+sur+la+chatroom+et+suivez+@@niptechpodcast+en+direct.&url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
+                    <img src="@routes.Assets.at("images/twtr-nt.png")">
+                </a>
+                <a href="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flive.niptech.com&p[summary]=Rejoignez+nous+sur+la+chatroom+et+suivez+le+live+niptech+en+direct" target="_blank" style="margin-left: 5px;">
+                    <img src="@routes.Assets.at("images/fb-nt.png")">
+                </a>
+                <a href="https://plus.google.com/share?url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
+                    <img src="@routes.Assets.at("images/gplus-nt.png")">
+                </a>
+                </span>
+            </div>
+            <div style="height:70px;background-color:white;border-bottom: 1px solid lightgray;"></div>
+        </div>
+        <div class="span4" style="margin-left: 0px; margin-right: 0px; border-left: 1px solid lightgray; width: 34%">
+            <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
+                <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">Chat board</span>
+            </div>
+            <div id="onChat">
+                <div id="main" style="height:100%;">
+                    <div id="messages">
+                    </div>
+                    <textarea id="talk"></textarea>
+                </div>
+            </div>
+            <div class="alert alert-success fade in" id="infomsg" style="display: none">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span></span>
+            </div>
+            <div class="alert alert-error fade in" id="errormsg" style="display: none">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <span></span>
+            </div>
+        </div>
+        <div class="span2" style="margin-left: 0px; border-left: 1px solid lightgray; width:19.1%">
+            <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
+                <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">
+                        En ligne : <span id="members-nbr" style="color:black;">@ChatRoom.members.length pers.</span>
+                </span>
+            </div>
+           <div id="members-list">
+                <div id="members">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="changeuser" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="changeuserLabel" aria-hidden="true">
+        <div style="background-image: url('@routes.Assets.at("images/bg-niptech.png")'); font-family: Hero">
+            <div class="modal-header" style="text-align: center; font-size: 40px; line-height: 45px;">
+                Connectez vous au live chat niptech !
+            </div>
+            <div class="modal-body">
+             <p style="margin-left:80px; font-size:30px; color: rgb(131,131,131)">avec</p>
+             <a href="@routes.Application.twitterLogin()">
+                <img style="margin-left: 200px;" src="@routes.Assets.at("images/twitter-home.png")">
+             </a>
+             <p style="margin-top:10px;color:rgb(131,131,131); font-size:10px;text-align:center;">
+                votre @@nom_utilisateur_twitter sera utilisé comme nickname
+             </p>
+             <p style="margin-top: 20px;font-size:30px;">ou saisissez votre nickname</p>
+                <input type="input" name="username" id="username"
+            style="margin-top: 5px;
+                    width: 100%%;
+                    height: 40px;
+                    font-size: 23px;
+                    font-family: "Trebuchet MS";
+                    font-weight: bold;">
+            <br/>
+            <a class="nip-button" style="font-size: 30px; padding: 20px 0px; width: 100%" name="changeButton" id="changeButton">Connexion</a>
+            </div>
+        </div>
+    </div>
+
+    </br>
+
+    <footer style="text-align: center; font-size: 12px;">
+        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/niptech-podcast/" target="_blank">le podcast</a>
+        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/category/emissions/" target="_blank">les émissions</a>
+        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/category/blog/" target="_blank">le blog</a>
+        <a style="margin: 15px; text-decoration: underline;" href="http://inspire.niptech.com/" target="_blank">les quotes</a>
+        <a style="margin: 15px; text-decoration: underline;" href="https://plus.google.com/u/0/communities/104157063722839703523" target="_blank">la communauté</a>
+        <a style="margin: 15px; text-decoration: underline;" href="https://github.com/Niptech/niptech-live" target="_blank">fork me on github</a>
+    </footer>
+
+    <script type="text/javascript" charset="utf-8">
+
+        var tag = document.createElement('script');
+        tag.src = "//www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytplayer', {
+                    height: '100%',
+                    width: '100%',
+                    playerVars: { 'autoplay': 1, 'autohide': 1 },
+                    videoId: '@getYouTubeId()',
+                    events: {
+                        'onReady': onPlayerReady
+                        }
+                    });
+        }
+
+        function onPlayerReady(event) {
+            // event.target.playVideo();
+        }
+
+
+        function reloadVideo() {
+          player.loadVideoById("@getYouTubeId()")
+        }
+
+        function toggleHelp() {
+            $("#help").popover('toggle')
+        }
+
+        function showMsg(textMsg) {
+            $("#infomsg span").text(textMsg)
+            var msg = $("#infomsg").alert()
+            msg.fadeIn()
+            msg.delay(3000).fadeOut()
+        }
+
+        function showErrorMsg(textMsg) {
+            $("#errormsg span").text(textMsg)
+            var msg = $("#errormsg").alert()
+            msg.fadeIn()
+            msg.delay(5000).fadeOut()
+        }
+
+        function changeNickname() {
+            $('#changeuser').modal()
+            $("#username").focus()
+        }
+
+        var allMembers = [];
+
+
+        $(function() {
+
+			var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
+            var chatSocket = new WS("@routes.Application.chat(username).webSocketURL()")
+
+            var sendMessage = function() {
+                chatSocket.send(JSON.stringify(
+                    {text: $("#talk").val()}
+                ))
+                $("#talk").val('')
+            }
+
+            var sendText = function(textMsg) {
+                chatSocket.send(JSON.stringify(
+                    {text: textMsg}
+                ))
+            }
+
+            var receiveEvent = function(event) {
+                var data = JSON.parse(event.data)
+
+                // Handle errors
+                if(data.error) {
+                    chatSocket.close()
+                    $("#onError span").text(data.error)
+                    $("#onError").show()
+                    return
+                } else {
+                    $("#onChat").show()
+                }
+
+                // Create the message element
+                var el = $('<div class="message"><img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"><img style="margin-top:-4px;margin-left:-35px;width:24px;height:24px;" src="' + data.avatar + '"></img><span></span><em></em><br/></div>')
+                $("span", el).text(data.user)
+                var now = new Date()
+                var min = now.getMinutes() + ""
+                if (min.length == 1) {
+                    min = "0" + min
+                }
+                $("em", el).text(now.getHours() + ':' + min)
+                $(el).append("<p>"+data.message+"</p>")
+
+                //$(el).addClass(data.kind)
+                if(data.user == myname) $(el).addClass('me')
+                $('#messages').append(el)
+
+                //Scroll to the bottom
+                var height = $('#messages')[0].scrollHeight;
+                $('#messages').scrollTop(height);
+
+                // Update the members list
+                $("#members").html('')
+                allMembers = data.members
+                $("#members").append('<span><img style="height:14px;margin-top:-3px;margin-left:-5px;" src="@routes.Assets.at("images/user.png")"><strong style="margin-left:5px;">' + myname + '</strong><a href="#" onclick="changeNickname()"><img src="@routes.Assets.at("images/user-edit.png")" style="margin-left: 15px; margin-top: -3px;width:13px;"></a></span></br>')
+                $(data.members).each(function() {
+                    if (this != myname)
+                        $("#members").append('<span><img style="height:14px;margin-top:-3px;margin-left:-5px; padding-right:5px;" src="@routes.Assets.at("images/user.png")">' + this + '</span></br>')
+                })
+
+                //Update the members number
+                $("#members-nbr").html(data.members.length + ' pers.')
+
+            }
+
+            var handleReturnKey = function(e) {
+                if(e.charCode == 13 || e.keyCode == 13) {
+                    e.preventDefault()
+                    sendMessage()
+                }
+            }
+
+            $("#talk").keypress(handleReturnKey)
+
+            chatSocket.onmessage = receiveEvent
+
+            var alreadyExist = function(user) {
+                var resp = false
+                $(allMembers).each(function() {
+                    if (this == user)
+                        resp = true
+                    })
+                return resp
+            }
+
+            var changeUsername = function(e) {
+                var username = document.getElementById('username').value
+                if(username.indexOf("<") != -1) {
+                    showErrorMsg("Si tu veux programmer en HTML, aide nous plutôt à faire évoluer le chat")
+                } else
+                if(username.indexOf("@@") != -1) {
+                    showErrorMsg("Le caractère @@ est réservé pour les comptes twitters")
+                } else
+                if(alreadyExist(username)) {
+                    showErrorMsg("Utilisateur déjà existant")
+                } else
+                if(username.trim() == "") {
+                    showErrorMsg("Merci de saisir un nom d'utilisateur")
+                } else               {
+                    myname = username
+                    sendText("nickname:" + username)
+                }
+                $("#changeuser").modal('hide')
+                updateDisplay()
+            }
+
+
+            var handleUsernameReturnKey = function(e) {
+            if(e.charCode == 13 || e.keyCode == 13) {
+                    e.preventDefault()
+                    changeUsername()
+                }
+            }
+
+            $("#username").keypress(handleUsernameReturnKey)
+            $("#changeButton").click(changeUsername)
+            $("#username").focus()
+
+            var myname = "@ChatRoom.username(username)"
+
+        })
+
+    </script>
+
+
+
+
+}

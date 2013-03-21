@@ -1,23 +1,54 @@
-@(title: String)(content: Html)
+@(user: Option[String])(content: Html)
+
+@import play.api.cache.Cache
+@import play.api.Play.current
+
 
 <!DOCTYPE html>
 
 <html>
     <head>
-        <title>@title</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <title>niptech Live</title>
+        <meta property="og:title" content="Niptech live chatroom" />
+		<meta property="og:image" content="http://live.niptech.com/assets/images/Thumbnail.jpg" />
+		<meta property="og:description" content="Diffusion du live niptech tous les mardi soir à 21h00. Venez nous rejoindre et partagez vos commentaires." />
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/niptechlive-main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script src="@routes.Assets.at("javascripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/bootstrap.js")" type="text/javascript"></script>
+
+        <style>
+            @@font-face { font-family: Hero; src: url('@routes.Assets.at("fonts/Hero.otf")'); }
+            @@font-face { font-family: HeroLight; src: url('@routes.Assets.at("fonts/HeroLight.otf")'); }
+        </style>
     </head>
-    <body>
+    <body style="background-image: url('@routes.Assets.at("images/bg-niptech.png")');">
+        
+        <div class="topbar" style="background-color: rgb(246,246,246); border-bottom: 1px solid lightgray; box-shadow: 0px 1px 9px lightgray; z-index: 5;">
+            <div style="width:100%;height:10px;background-color:rgb(1,112,186);"></div>
+            <div class="row-fluid">
+                <div class="span1"></div>
+                <div class="span9" style="border-right: 1px solid lightgray; margin-left: 0px;">
+                        <img src="@routes.Assets.at("images/niptech.png")">
+                        <span style='font-family: "HeroLight"; font-size: 30px; color: rgb(131,131,131); vertical-align: -35px;'>dissèque la tech</span>
+                </div>
+                <div class="span2" style="text-align: center; margin-left: 0px;">
+                        @user.map { username =>
+                            <p style="color: rgb(1,112,186); font-size: 20px; margin-top:20px;">DECONNEXION</p>
+                            <p>
+                                <a href="@routes.Application.doLogout()"><img src="@routes.Assets.at("images/disconnect.png")"></a>
+                            </p>
+                        }
+                </div>
+            </div>
+        </div>
 
-        <header>
-            <a href="@routes.Application.index">@title</a>
-        </header>
+        <div style="margin-top:3px;">
 
-        <section>
-            @content
-        </section>
+                @content
 
+        </div>
+        
     </body>
 </html>
