@@ -1,0 +1,3 @@
+cd ~/devel/niptech-live
+play stage
+scp -i ~/.ssh/fcxec2.pem ~/devel/niptech-live/target/staged/niptech-live_2.10-1.0-SNAPSHOT.jar  ubuntu@ec2-50-16-174-76.compute-1.amazonaws.com:

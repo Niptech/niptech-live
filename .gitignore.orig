@@ -1,8 +1,14 @@
 logs
+<<<<<<< HEAD
+dist
+=======
+>>>>>>> 4a52b7e6f626d32a25d6d98aa6677de3d96deb58
 project/project
 project/target
 target
 tmp
+<<<<<<< HEAD
+=======
 .history
 dist
 /.idea
@@ -14,3 +20,4 @@ dist
 /RUNNING_PID
 /.settings
 twitter4j.conf
+>>>>>>> 4a52b7e6f626d32a25d6d98aa6677de3d96deb58
