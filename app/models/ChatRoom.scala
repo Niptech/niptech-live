@@ -29,7 +29,7 @@ object ChatRoom {
 
   def initialize = {
 
-    robot
+    // robot
 
     initTwitterListener
 
