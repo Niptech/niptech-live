@@ -1,3 +1,2 @@
-cd ~/devel/niptech-live
 play dist
-scp -i ~/.ssh/fcxec2.pem ~/devel/niptech-live/dist/niptech-live-1.0-SNAPSHOT.zip  ubuntu@ec2-50-16-174-76.compute-1.amazonaws.com:
+scp  ./dist/niptech-live-1.0-SNAPSHOT.zip  niptech@5.39.83.175:

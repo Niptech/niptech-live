@@ -9,7 +9,7 @@ GET     /room/chat                  controllers.Application.chat(userid:String)
 GET     /callback                   controllers.Application.callback(oauth_token: String, oauth_verifier: String)
 
 GET     /admin                      controllers.Application.admin
-GET     /configure                  controllers.Application.configure(onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None)
+GET     /configure                  controllers.Application.configure(episodeNb: Option[String] ?= None, onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None)
 
 GET     /login                      controllers.Application.login
 POST    /login                      controllers.Application.doLogin
