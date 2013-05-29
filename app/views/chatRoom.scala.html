@@ -216,11 +216,7 @@
         }
 
         // Create the message element
-        var el;
-        if (data.avatar == '')
-            el = $('<div class="message"><img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"><span></span><em></em><br/></div>');
-        else
-            el = $('<div class="message"><img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"><img style="margin-top:-4px;margin-left:-35px;width:24px;height:24px;" src="' + data.avatar + '"></img><span></span><em></em><br/></div>');
+        var el = $('<div class="message"><img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"><img style="display:inline-block;margin-top:-4px;margin-left:-35px;width:24px;height:24px;" src="' + data.avatar + '"></img><span></span><em></em><br/></div>');
 
         $("span", el).text(data.user);
         var now = new Date();
