@@ -36,6 +36,11 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
         val hend = if (htext.indexOf(' ', hstart) == -1) htext.size else htext.indexOf(' ', hstart)
         val url = htext.substring(hstart, hend)
         htext.replace(url, "<a href='" + url + "' target=_blank>" + url + "</a>")
+      case httpsurl if text.contains("https://") =>
+        val hstart = httpsurl.indexOf("https://")
+        val hend = if (httpsurl.indexOf(' ', hstart) == -1) httpsurl.size else httpsurl.indexOf(' ', hstart)
+        val url = httpsurl.substring(hstart, hend)
+        httpsurl.replace(url, "<a href='" + url + "' target=_blank>" + url + "</a>")
       case _ => text
     }
 

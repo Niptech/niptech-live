@@ -207,19 +207,24 @@
 
         // Handle errors
         if(data.error) {
-        chatSocket.close()
-        $("#onError span").text(data.error)
-        $("#onError").show()
-        return
+            chatSocket.close()
+            $("#onError span").text(data.error)
+            $("#onError").show();
+            return
         } else {
-        $("#onChat").show()
+            $("#onChat").show();
         }
 
         // Create the message element
-        var el = $('<div class="message"><img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"><img style="margin-top:-4px;margin-left:-35px;width:24px;height:24px;" src="' + data.avatar + '"></img><span></span><em></em><br/></div>')
-        $("span", el).text(data.user)
-        var now = new Date()
-        var min = now.getMinutes() + ""
+        var el;
+        if (data.avatar == '')
+            el = $('<div class="message"><img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"><span></span><em></em><br/></div>');
+        else
+            el = $('<div class="message"><img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"><img style="margin-top:-4px;margin-left:-35px;width:24px;height:24px;" src="' + data.avatar + '"></img><span></span><em></em><br/></div>');
+
+        $("span", el).text(data.user);
+        var now = new Date();
+        var min = now.getMinutes() + "";
         if (min.length == 1) {
         min = "0" + min
         }
