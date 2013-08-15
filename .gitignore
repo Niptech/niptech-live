@@ -13,4 +13,4 @@ dist
 /.project
 /RUNNING_PID
 /.settings
-twitter4j.conf
+conf/twitter4j.conf
