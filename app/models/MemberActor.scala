@@ -98,10 +98,10 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
 
     case ChangeName(newname, image) =>
       ChatRoom.members -= username
-      ChatRoom.members += newname
+      ChatRoom.members += xml.Utility.escape(newname)
       notifyAll("talk", username + " a changé son nom en " + newname)
       Logger.info(username + " a changé son nom en " + newname)
-      username = newname
+      username = xml.Utility.escape(newname)
       image.map(url => imageUrl = url)
 
     case ChatMessage(msg: JsObject) =>
@@ -131,7 +131,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
         "kind" -> JsString(kind),
         "user" -> JsString(username),
         "avatar" -> JsString(imageUrl),
-        "message" -> JsString(text),
+        "message" -> JsString(xml.Utility.escape(text)),
         "members" -> JsArray(ChatRoom.members.map(JsString))))
     Akka.system.eventStream.publish(ChatMessage(msg))
   }
