@@ -83,7 +83,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
           self ! ChangeName(text.takeRight(text.size - 9), None)
 
         case _ =>
-          notifyAll("talk", addHyperlink(text))
+          notifyAll("talk", text)
           if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
             try {
               TwitterClient.twitter.updateStatus((username + " - " + text).take(140))
@@ -131,7 +131,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
         "kind" -> JsString(kind),
         "user" -> JsString(username),
         "avatar" -> JsString(imageUrl),
-        "message" -> JsString(xml.Utility.escape(text)),
+        "message" -> JsString(addHyperlink(xml.Utility.escape(text))),
         "members" -> JsArray(ChatRoom.members.map(JsString))))
     Akka.system.eventStream.publish(ChatMessage(msg))
   }
