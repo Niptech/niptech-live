@@ -40,6 +40,9 @@ object Application extends Controller {
     }
   }
 
+  def changeUserDialog = Action {
+      Ok(views.html.changeUsername())
+    }
 
   def configure(episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
     implicit request =>

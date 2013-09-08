@@ -67,7 +67,7 @@
                             <p>{{msg.message}}</p>
                         </div>
                     </div>
-                    <textarea id="talk" ng-model="currentMessage" ng-enter="sendMessage()"></textarea>
+                    <textarea id="talk" ng-model="currentMessage" ng-enter="sendText(currentMessage)"></textarea>
                 </div>
             </div>
             <div class="alert alert-success fade in" id="infomsg" style="display: none">
@@ -82,8 +82,9 @@
         <div class="span2" style="margin-left: 0px; border-left: 1px solid lightgray; width:19.1%">
             <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
                 <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">
-                    En ligne : <span id="members-nbr" style="color:black;">@ChatRoom.members.length pers.</span>
+                    En ligne : <span id="members-nbr" style="color:black;">{{users.length}} pers.</span>
                 </span>
+                <a href="#" ng-click="openChangeUsernameDlg()"><img src="@routes.Assets.at("images/user-edit.png")" style="margin-left: 15px; margin-top: -3px;width:13px;"></a>
             </div>
             <div id="members-list">
                 <div id="members" ng-repeat="user in users">
@@ -93,33 +94,6 @@
         </div>
     </div>
 
-    <div id="changeuser" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="changeuserLabel" aria-hidden="true">
-        <div style="background-image: url('@routes.Assets.at("images/bg-niptech.png")'); font-family: Hero">
-            <div class="modal-header" style="text-align: center; font-size: 40px; line-height: 45px;">
-                Connectez vous au live chat niptech !
-            </div>
-            <div class="modal-body">
-                <p style="margin-left:80px; font-size:30px; color: rgb(131,131,131)">avec</p>
-                <a href="@routes.Application.twitterLogin()">
-                    <img style="margin-left: 200px;" src="@routes.Assets.at("images/twitter-home.png")">
-                </a>
-                <p style="margin-top:10px;color:rgb(131,131,131); font-size:10px;text-align:center;">
-                    votre @@nom_utilisateur_twitter sera utilisé comme nickname
-                </p>
-                <p style="margin-top: 20px;font-size:30px;">ou saisissez votre nickname</p>
-                <input type="input" name="username" id="username"
-                style="margin-top: 5px;
-                    width: 100%%;
-                    height: 40px;
-                    font-size: 23px;
-                    font-family: " Trebuchet MS";
-                    font-weight: bold;">
-                <br/>
-                <a class="nip-button" style="font-size: 30px; padding: 20px 0px; width: 100%" name="changeButton" id="changeButton">
-                    Connexion</a>
-            </div>
-        </div>
-    </div>
 
     </br>
 

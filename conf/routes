@@ -15,6 +15,8 @@ GET     /login                      controllers.Application.login
 POST    /login                      controllers.Application.doLogin
 GET     /logout                     controllers.Application.doLogout
 
+GET     /changeuser                 controllers.Application.changeUserDialog
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

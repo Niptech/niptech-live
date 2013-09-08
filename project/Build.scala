@@ -14,6 +14,7 @@ object ApplicationBuild extends Build {
     "org.webjars" %% "webjars-play" % "2.1.0-2",
     "org.webjars" % "angularjs" % "1.1.5-1",
     "org.webjars" % "bootstrap" % "2.3.2",
+    "org.webjars" % "angular-ui-bootstrap" % "0.5.0",
     "org.scalatest" %% "scalatest" % "1.9.1" % "test",
     "junit" % "junit" % "4.11" % "test",
     "com.novocode" % "junit-interface" % "0.7" % "test->default"

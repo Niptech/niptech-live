@@ -2,7 +2,7 @@
 
 /** Controllers */
 angular.module('liveChat.controllers', []).
-    controller('ChatCtrl', function ($scope, $http) {
+    controller('ChatCtrl', function ($scope, $dialog, $http) {
         $scope.messages = [];
         $scope.inputText = "";
         $scope.users = [];
@@ -15,12 +15,6 @@ angular.module('liveChat.controllers', []).
             $scope.chatSocket.onmessage = $scope.receiveEvent;
 
         };
-
-        $scope.sendMessage = function () {
-            $scope.chatSocket.send(JSON.stringify(
-                {text: $scope.currentMessage}
-            ));
-        }
 
         $scope.sendText = function (textMsg) {
             $scope.chatSocket.send(JSON.stringify(
@@ -55,15 +49,14 @@ angular.module('liveChat.controllers', []).
 
         var alreadyExist = function (user) {
             var resp = false
-            $(allMembers).each(function () {
+            $($scope.users).each(function () {
                 if (this == user)
                     resp = true
             })
             return resp
         }
 
-        $scope.changeUsername = function (e) {
-            var username = document.getElementById('username').value
+        $scope.changeUsername = function (username) {
             if (username.indexOf("<") != -1) {
                 showErrorMsg("Si tu veux programmer en HTML, aide nous plutôt à faire évoluer le chat")
             } else if (username.indexOf("@@") != -1) {
@@ -74,10 +67,8 @@ angular.module('liveChat.controllers', []).
                 showErrorMsg("Merci de saisir un nom d'utilisateur")
             } else {
                 myname = username
-                sendText("nickname:" + username)
+                $scope.sendText("nickname:" + username)
             }
-            $("#changeuser").modal('hide')
-            updateDisplay()
         }
 
 
@@ -88,12 +79,33 @@ angular.module('liveChat.controllers', []).
             }
         }
 
-        $("#username").keypress($scope.handleUsernameReturnKey)
-        $("#changeButton").click($scope.changeUsername)
-        $("#username").focus()
+        $scope.openChangeUsernameDlg = function () {
+            var dialogOptions = {
+                modal: true,
+                fade: true,
+                backdrop: true,
+                keyboard: true,
+                backdropClick: true,
+                templateUrl: '/changeuser',
+                controller: 'ChangeNameDlgCtrl'
+            };
 
-        var myname = "@ChatRoom.username(username)"
+            var d = $dialog.dialog(dialogOptions);
+            d.open().then(function (username) {
+                if (username) {
+                    $scope.changeUsername(username);
+                }
+            });
+        }
 
+        var myname = '';
 
 
     });
+
+
+function ChangeNameDlgCtrl($scope, dialog) {
+    $scope.close = function(result) {
+        dialog.close(result);
+    };
+}
