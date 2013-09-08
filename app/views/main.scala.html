@@ -6,24 +6,30 @@
 
 <!DOCTYPE html>
 
-<html>
+<html ng-app=liveChat>
     <head>
         <title>niptech Live</title>
         <meta property="og:title" content="Niptech live chatroom" />
 		<meta property="og:image" content="http://live.niptech.com/assets/images/Thumbnail.jpg" />
 		<meta property="og:description" content="Diffusion du live niptech tous les mardi soir à 21h00. Venez nous rejoindre et partagez vos commentaires." />
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/niptechlive-main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/bootstrap.js")" type="text/javascript"></script>
+
+        <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
+        <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
+        <script src="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.js"))"></script>
+
+        <script src="@routes.Assets.at("javascripts/app.js")"></script>
+        <script src="@routes.Assets.at("javascripts/controllers.js")"></script>
+        <script src="@routes.Assets.at("javascripts/directives.js")"></script>
 
         <style>
             @@font-face { font-family: Hero; src: url('@routes.Assets.at("fonts/Hero.otf")'); }
             @@font-face { font-family: HeroLight; src: url('@routes.Assets.at("fonts/HeroLight.otf")'); }
         </style>
     </head>
-    <body style="background-image: url('@routes.Assets.at("images/bg-niptech.png")');">
+    <body style="background-image: url('@routes.Assets.at("images/bg-niptech.png")');" ng-controller="ChatCtrl" ng-init="connect(@user.get)">
         
         <div class="topbar" style="background-color: rgb(246,246,246); border-bottom: 1px solid lightgray; box-shadow: 0px 1px 9px lightgray; z-index: 5;">
             <div style="width:100%;height:10px;background-color:rgb(1,112,186);"></div>

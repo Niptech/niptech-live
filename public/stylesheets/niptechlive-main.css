@@ -53,13 +53,13 @@ h1, h2, h3, h4, h5 {
     background-color: white;
 }
 
-#messages {
+#message-list {
     position: absolute;
     bottom: 75px;
     overflow-y: scroll;
     background-color: white;
     height: 405px;
-    width: 100%
+    width: 100%;
 }
 
 #talk {

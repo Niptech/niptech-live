@@ -5,7 +5,7 @@
 # Home page
 GET     /                           controllers.Application.chatRoom
 GET     /twitterLogin               controllers.Application.twitterLogin
-GET     /room/chat                  controllers.Application.chat(userid:String)
+GET     /room/chat/:userid          controllers.Application.chat(userid:String)
 GET     /callback                   controllers.Application.callback(oauth_token: String, oauth_verifier: String)
 
 GET     /admin                      controllers.Application.admin
@@ -18,3 +18,4 @@ GET     /logout                     controllers.Application.doLogout
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /webjars/*file              controllers.WebJarAssets.at(file)

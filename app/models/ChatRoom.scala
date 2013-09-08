@@ -31,7 +31,7 @@ object ChatRoom {
 
     // robot
 
-    initTwitterListener
+    // initTwitterListener
 
     Logger.info("ChatRoom initialized")
 
