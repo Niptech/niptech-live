@@ -7,6 +7,7 @@ angular.module('liveChat.controllers', []).
         $scope.inputText = "";
         $scope.users = [];
         $scope.currentMessage = "";
+        $scope.currentUser ="";
 
 
         $scope.connect = function (username) {
@@ -14,6 +15,9 @@ angular.module('liveChat.controllers', []).
             $scope.chatSocket = new WS("ws://localhost:9000/room/chat/" + username);
             $scope.chatSocket.onmessage = $scope.receiveEvent;
 
+            $http.get('/username/' + username).success(function(data, status, headers, config) {
+                $scope.currentUser = data;
+            });
         };
 
         $scope.sendText = function (textMsg) {
@@ -68,14 +72,15 @@ angular.module('liveChat.controllers', []).
             } else {
                 myname = username
                 $scope.sendText("nickname:" + username)
+                $scope.currentUser = username;
             }
         }
 
-
-        $scope.handleUsernameReturnKey = function (e) {
-            if (e.charCode == 13 || e.keyCode == 13) {
-                e.preventDefault();
-                $scope.changeUsername();
+        $scope.setUserStyle = function(username) {
+            if (username == $scope.currentUser) {
+                return "{color : 'blue';}";
+            } else {
+                return "{}";
             }
         }
 

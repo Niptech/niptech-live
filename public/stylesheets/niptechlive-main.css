@@ -15,8 +15,6 @@ h1, h2, h3, h4, h5 {
     width: 1020px; /* downsize our container to make the content feel a bit tighter and more cohesive. NOTE: this removes two full columns from the grid, meaning you only go to 14 columns and not 16. */
 }
 
-
-
 /* Page header tweaks */
 .page-header {
     background-color: #fff;
@@ -85,7 +83,7 @@ h1, h2, h3, h4, h5 {
     width: 91%;
     margin-left: 7%;
     margin-top: 10px;
-    background-color: rgb(247,247,247);
+    background-color: rgb(247, 247, 247);
 }
 
 .message span {
@@ -99,7 +97,7 @@ h1, h2, h3, h4, h5 {
     vertical-align: top;
     position: relative;
     top: -1px;
-    color: rgb(133,133,133);
+    color: rgb(133, 133, 133);
 }
 
 .message p {
@@ -110,17 +108,22 @@ h1, h2, h3, h4, h5 {
 }
 
 .message em {
-    margin-right:10px;
-    float:right;
-    color:rgb(133,133,133);
+    margin-right: 10px;
+    float: right;
+    color: rgb(133, 133, 133);
 }
 
-.message.me {
+.message.myMessage {
     background: #FFC;
 }
 
 .message.join, .message.quit {
     background: #D9E7FB;
+}
+
+.me {
+    color: blue;
+    font-weight: bold;
 }
 
 #members-list {
@@ -158,7 +161,7 @@ h1, h2, h3, h4, h5 {
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background-color: rgb(43,134,203);
+    background-color: rgb(43, 134, 203);
     border-color: #BBBBBB #BBBBBB #A2A2A2;
     border-image: none;
     border-radius: 0px;
@@ -182,6 +185,13 @@ h1, h2, h3, h4, h5 {
 
 .nip-dialog {
     background-color: #C3C3C3;
+}
+
+.nip-title {
+    font-size: 18px;
+    color: rgb(131, 131, 131);
+    vertical-align: -20px;
+    margin-left: 10px;
 }
 
 /* On Air Radio buttons */

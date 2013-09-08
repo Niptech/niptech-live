@@ -7,6 +7,8 @@ GET     /                           controllers.Application.chatRoom
 GET     /twitterLogin               controllers.Application.twitterLogin
 GET     /room/chat/:userid          controllers.Application.chat(userid:String)
 GET     /callback                   controllers.Application.callback(oauth_token: String, oauth_verifier: String)
+GET     /username/:userid           controllers.Application.getUsername(userid: String)
+
 
 GET     /admin                      controllers.Application.admin
 GET     /configure                  controllers.Application.configure(episodeNb: Option[String] ?= None, onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None)
@@ -14,6 +16,7 @@ GET     /configure                  controllers.Application.configure(episodeNb:
 GET     /login                      controllers.Application.login
 POST    /login                      controllers.Application.doLogin
 GET     /logout                     controllers.Application.doLogout
+
 
 GET     /changeuser                 controllers.Application.changeUserDialog
 

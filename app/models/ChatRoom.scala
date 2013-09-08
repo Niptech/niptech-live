@@ -88,7 +88,7 @@ object ChatRoom {
         if (text.contains("#quote")) {
           Logger.info("NEW QUOTE : " + st.getText)
           val quotes = ConfigFactory.load("niptechquotes").getStringList("quotes")
-          quotes.add(st.getText.replaceAll("\"",""))
+          quotes.add(st.getText.replaceAll("\"", ""))
           val writer = new FileWriter("./niptech-live/niptechquotes.conf")
           writer.write("quotes = [")
           val content = quotes.toList.map(quote => "\"" + quote + "\"").mkString(",\r\n") + "]"
@@ -131,11 +131,15 @@ object ChatRoom {
 
   def username(userid: String): String = {
     val member = Akka.system.actorFor("/user/" + userid)
-    val f = (member ? GetUsername()).map {
-      case name: String => name
-      case _ => ""
+    if (member.isTerminated)
+      "None"
+    else {
+      val f = (member ? GetUsername()).map {
+        case name: String => name
+        case _ => ""
+      }
+      Await.result(f, 10 second)
     }
-    Await.result(f, 10 second)
   }
 
   def changeName(userid: String, newName: String, imageUrl: Option[String]) = {

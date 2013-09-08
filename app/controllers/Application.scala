@@ -72,6 +72,10 @@ object Application extends Controller {
 
   def newUserid = new java.util.Date().getTime().toString
 
+  def getUsername(userid: String) = Action {
+    Ok(ChatRoom.username(userid))
+  }
+
   def twitterLogin = Action {
     implicit request =>
       val twitter = TwitterClient.newInstance
