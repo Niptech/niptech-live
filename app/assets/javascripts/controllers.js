@@ -8,6 +8,7 @@ angular.module('liveChat.controllers', []).
         $scope.users = [];
         $scope.currentMessage = "";
         $scope.currentUser ="";
+        $scope.title= "toute l'actualité IT au Luxembourg";
 
 
         $scope.connect = function (username) {
