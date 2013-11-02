@@ -18,6 +18,13 @@ object TwitterClient {
 
   val defaultImageUrl = "http://www.gravatar.com/avatar/none?s=20"
 
+
+  val valid = configuration.getString("twitter.ConsumerKey").getOrElse("").length > 0 &&
+    configuration.getString("twitter.ConsumerSecret").getOrElse("").length > 0 &&
+    configuration.getString("twitter.AccessToken").getOrElse("").length > 0 &&
+    configuration.getString("twitter.AccessTokenSecret").getOrElse("").length > 0
+
+
   val twitterConfiguration = {
     val cb = new ConfigurationBuilder()
 
@@ -48,7 +55,7 @@ object TwitterClient {
   def getUserImageUrl(user: String) = try {
     twitter.showUser(user).getMiniProfileImageURL
   } catch {
-    case exc:Throwable => defaultImageUrl
+    case exc: Throwable => defaultImageUrl
   }
 
 }
