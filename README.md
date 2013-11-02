@@ -36,7 +36,7 @@ connecté avec son compte twitter peut sauvegarder des informations en tapant le
 s'affiche pas mais il est envoyé en tant que direct message à l'utilisatur connecté.
 
 Pour activer les fonctionalités Twitter vous devez entrer les informations d'application Twitter dans le fichier  conf/application.conf.
-* ConsumerKey
+* twitter.ConsumerKey
 * twitter.ConsumerSecret
 * twitter.AccessToken
 * twitter.AccessTokenSecret
