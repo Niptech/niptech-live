@@ -8,7 +8,7 @@ Cette application gère un **chat live** ainsi que la **diffusion d'un flux yout
 
 ## ADMINISTRATION
 L'administration consiste à indiquer l'id du flux youtube à diffuser et à activer ou désactiver le live stream Twitter.
-La page d'administration est sécurisée et est accessible à http://live.niptech.com/admin
+La page d'administration est sécurisée et est accessible à http://localhost:9000/admin
 * Pour démarrer le chat, cliquer sur le bouton rouge **Off Air** et indiquer l'id du flux youtube
 * L'activation/désactivation du twitter live stream se fait via le bouton éponyme.
 * Pour appliquer les modifications, cliquer sur **Appliquer**
