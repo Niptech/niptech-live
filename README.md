@@ -8,9 +8,11 @@ Cette application gère un **chat live** ainsi que la **diffusion d'un flux yout
 
 ## CONFIGURATION ADMIN
 La configuration du  **chat live** se passe dans le fichier conf/application.conf.
-Vous devez spécifier les mots de passe pour l'administration : "authorizedUsers=admin".
+Vous devez spécifier les mots de passe pour l'administration :
+* authorizedUsers="admin".
 
-Vous pouvez spécifier plusieurs mot de passe en les séparent avec des "," ex :   "authorizedUsers=admin,admin1,admin2".
+Vous pouvez spécifier plusieurs mot de passe en les séparent avec des "," ex :
+* authorizedUsers="admin,admin1,admin2".
 
 
 ## ADMINISTRATION
@@ -40,7 +42,6 @@ Pour activer les fonctionalités Twitter vous devez entrer les informations d'ap
 * twitter.AccessTokenSecret
 * twitter.Callback
 
- Pour plus d'information
 
 
 ## Licensing
