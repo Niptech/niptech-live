@@ -32,7 +32,7 @@ object ChatRoom {
     // robot
 
 
-    if(TwitterClient.valid){
+    if(TwitterClient.isValid){
 
     initTwitterListener
     }

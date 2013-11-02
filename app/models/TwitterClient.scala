@@ -19,13 +19,13 @@ object TwitterClient {
   val defaultImageUrl = "http://www.gravatar.com/avatar/none?s=20"
 
 
-  val valid = configuration.getString("twitter.ConsumerKey").getOrElse("").length > 0 &&
+  val isValid = configuration.getString("twitter.ConsumerKey").getOrElse("").length > 0 &&
     configuration.getString("twitter.ConsumerSecret").getOrElse("").length > 0 &&
     configuration.getString("twitter.AccessToken").getOrElse("").length > 0 &&
     configuration.getString("twitter.AccessTokenSecret").getOrElse("").length > 0
 
 
-  val twitterConfiguration = {
+  val twitterConfiguration = if (isValid){
     val cb = new ConfigurationBuilder()
 
     cb.setDebugEnabled(true)
@@ -36,6 +36,9 @@ object TwitterClient {
 
     cb.build
 
+  }else{
+
+    new ConfigurationBuilder().build()
   }
 
   val twitter = {
