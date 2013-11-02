@@ -60,7 +60,6 @@ object Application extends Controller {
    * Display the chat room page.
    */
 
-  val callback: String = configuration.getString("twitter.Callback").get
   def chatRoom = Action {
     implicit request =>
       val userid = request.session.get("userid").getOrElse(newUserid)
@@ -75,6 +74,7 @@ object Application extends Controller {
     implicit request =>
       val twitter = TwitterClient.newInstance
       val id = new Random(new java.util.Date().getTime()).nextLong().abs.toString
+      val callback: String = configuration.getString("twitter.Callback").get
       val requestToken = twitter.getOAuthRequestToken(callback)
       Cache.set(id, TwitterStore(twitter, requestToken))
       Redirect(requestToken.getAuthenticationURL) withSession (session + ("niptid" -> id))
@@ -152,7 +152,7 @@ object Application extends Controller {
       request.body("password").headOption match {
         case Some(password) =>
           if (users.contains(password))
-            Redirect("/admin").withSession(session + ("admin", password))
+            Redirect("/admin").withSession(session +("admin", password))
           else
             Ok(views.html.login(Some("Password invalide")))
         case _ => Ok(views.html.login(Some("Password invalide")))
