@@ -6,6 +6,12 @@
 
 Cette application gère un **chat live** ainsi que la **diffusion d'un flux youtube** sur la même page.
 
+## Configuration admin
+La configuration du  **chat live** se passe dans le fichier conf/application.conf
+Vous devez spécifier les mots de passe pour l'administration : "authorizedUsers=admin"
+Vous pouvez spécifier plusieurs mot de passe en les séparent avec des "," ex :   "authorizedUsers=admin,admin1,admin2"
+
+
 ## ADMINISTRATION
 L'administration consiste à indiquer l'id du flux youtube à diffuser et à activer ou désactiver le live stream Twitter.
 La page d'administration est sécurisée et est accessible à http://localhost:9000/admin
@@ -25,6 +31,16 @@ Ils sont postés par l'utilisateur @niptechlive.
 * Un utilisateur peut se connecter via OAuth et son compte twitter, son avatar s'affiche dans la chat room. Un utilisateur
 connecté avec son compte twitter peut sauvegarder des informations en tapant le mot clé save: suivi d'un texte dans la chatroom Le texte ne
 s'affiche pas mais il est envoyé en tant que direct message à l'utilisatur connecté.
+
+Pour activer les fonctionalités Twitter vous devez entrer les informations d'application Twitter dans le fichier  conf/application.conf.
+
+*ConsumerKey
+*twitter.ConsumerSecret
+*twitter.AccessToken
+*twitter.AccessTokenSecret
+*twitter.Callback
+
+ Pour plus d'information
 
 
 ## Licensing
