@@ -4,6 +4,7 @@
         Connectez vous au live chat niptech !
     </div>
     <div class="modal-body">
+        @if(TwitterClient.isValid){
         <p style="margin-left:80px; font-size:30px; color: rgb(131,131,131)">avec</p>
         <a href="@routes.Application.twitterLogin()">
             <img style="margin-left: 200px;" src="assets/images/twitter-home.png">
@@ -14,6 +15,9 @@
         </p>
 
         <p style="margin-top: 20px;font-size:30px;">ou saisissez votre nickname</p>
+        } else{
+            <p style="margin-top: 20px;font-size:30px;">Saisissez votre nickname</p>
+        }
         <input type="input" name="username" id="username" ng-model="username"
                style="margin-top: 5px;
                     width: 100%%;
