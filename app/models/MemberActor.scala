@@ -45,7 +45,6 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
     }
 
   def receive = {
-
     case Connect() => {
       isConnected = true
       val msg = JsObject(
@@ -53,17 +52,19 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
           "kind" -> JsString("talk"),
           "user" -> JsString(username),
           "avatar" -> JsString(imageUrl),
-          "message" -> JsString("Vous êtes connecté à la ChatRoom"),
+          "message" -> JsString(username + " s'est connecté à la ChatRoom"),
           "members" -> JsArray(ChatRoom.members.map(JsString))))
       sender ! Connected(chatEnumerator)
       Akka.system.scheduler.scheduleOnce(1 second) {
-        self ! ChatMessage(msg)
+     //   self ! ChatMessage(msg)
+        notifyAll("talk", username + " s'est connecté à la ChatRoom")
       }
     }
 
     case Disconnect() => {
       Logger.debug(username + " disconnected")
       isConnected = false
+      notifyAll("talk", username + " s'est déconnecté de la ChatRoom")
     }
 
     case NotifyJoin() => {
@@ -120,6 +121,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       Logger.debug(username + " quitte la chatroom")
       ChatRoom.members -= username
       Cache.remove(userid)
+      notifyAll("talk", username + " a quitté la ChatRoom")
       Akka.system.eventStream.unsubscribe(self, classOf[ChatMessage])
       Akka.system.stop(self)
 

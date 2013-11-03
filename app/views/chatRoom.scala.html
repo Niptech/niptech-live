@@ -28,9 +28,9 @@
         <div class="span1" style="height: 400px;"></div>
         <div class="span5" style="margin-left: 0px; border-left: 1px solid lightgray;">
             <div style="height: 45px; background-color: white">
-                <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">
+                <span class="nip-title">
                     Video board</span>
-                <span style="float:right; font-size: 18px; margin-top:18px;margin-right:5px;)">niptech @getEpisodeNb()</span>
+                <span style="float:right; font-size: 18px; margin-top:18px;margin-right:5px;)">@getEpisodeNb()</span>
             </div>
             <div id="ytplayer" style="height: 350px;"></div>
             <div style="border-bottom: 1px solid lightgray; padding-bottom: 10px; background-color: white">
@@ -53,14 +53,25 @@
         </div>
         <div class="span4" style="margin-left: 0px; margin-right: 0px; border-left: 1px solid lightgray; width: 34%">
             <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
-                <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">
+                <span class="nip-title">
                     Chat board</span>
+                <a class="nip-title-button pull-right" ng-click="openChangeUsernameDlg()">
+                    Changer de nom</a>
             </div>
             <div id="onChat">
                 <div id="main" style="height:100%;">
-                    <div id="messages">
+                    <div id="message-list" scroll-glue>
+                        <div class="message" ng-repeat="msg in messages" ng-class="{myMessage: msg.user == currentUser}">
+                            <!-- <img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"> -->
+                            <div id="nip-bg-avatar"></div>
+                            <img ng-hide="msg.avatar == ''" style="display:inline-block;margin-top:-4px;margin-left:-35px;width:24px;height:24px;" ng-src="{{msg.avatar}}">
+                            <span>{{msg.user}}</span>
+                            <em>{{msg.time}}</em>
+                            <br/>
+                            <p>{{msg.message}}</p>
+                        </div>
                     </div>
-                    <textarea id="talk"></textarea>
+                    <textarea id="talk" ng-model="currentMessage" ng-enter="sendText(currentMessage)"></textarea>
                 </div>
             </div>
             <div class="alert alert-success fade in" id="infomsg" style="display: none">
@@ -74,51 +85,20 @@
         </div>
         <div class="span2" style="margin-left: 0px; border-left: 1px solid lightgray; width:19.1%">
             <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
-                <span style="font-size: 18px; color: rgb(131,131,131); vertical-align: -20px; margin-left: 10px;">
-                    En ligne : <span id="members-nbr" style="color:black;">@ChatRoom.members.length pers.</span>
+                <span class="nip-title">
+                    En ligne : <span id="members-nbr" style="color:black;">{{users.length}} pers.</span>
                 </span>
             </div>
             <div id="members-list">
-                <div id="members">
+                <div id="members" ng-repeat="user in users">
+                    <span><img style="height:14px;margin-top:-3px;margin-left:-5px; padding-right:5px;" src="/assets/images/user.png"><span ng-class="{me: user == currentUser}">{{ user }}</span></span></br>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="changeuser" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="changeuserLabel" aria-hidden="true">
-        <div style="background-image: url('@routes.Assets.at("images/bg-niptech.png")'); font-family: Hero">
-            <div class="modal-header" style="text-align: center; font-size: 40px; line-height: 45px;">
-                Connectez vous au live chat niptech !
-            </div>
-            <div class="modal-body">
-                @if(TwitterClient.isValid){
-                <p style="margin-left:80px; font-size:30px; color: rgb(131,131,131)">avec</p>
-                <a href="@routes.Application.twitterLogin()">
-                    <img style="margin-left: 200px;" src="@routes.Assets.at("images/twitter-home.png")">
-                </a>
 
-                <p style="margin-top:10px;color:rgb(131,131,131); font-size:10px;text-align:center;">
-                    votre @@nom_utilisateur_twitter sera utilisé comme nickname
-                </p>
-                <p style="margin-top: 20px;font-size:30px;">ou saisissez votre nickname</p>
-                } else{
-                    <p style="margin-top: 20px;font-size:30px;">Saisissez votre nickname</p>
-                }
-                <input type="input" name="username" id="username"
-                style="margin-top: 5px;
-                    width: 100%%;
-                    height: 40px;
-                    font-size: 23px;
-                    font-family: " Trebuchet MS";
-                    font-weight: bold;">
-                <br/>
-                <a class="nip-button" style="font-size: 30px; padding: 20px 0px; width: 100%" name="changeButton" id="changeButton">
-                    Connexion</a>
-            </div>
-        </div>
-    </div>
-
-    </br>
+    <br>
 
     <footer style="text-align: center; font-size: 12px;">
         <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/niptech-podcast/" target="_blank">
@@ -158,7 +138,6 @@
         // event.target.playVideo();
         }
 
-
         function reloadVideo() {
         player.loadVideoById("@getYouTubeId()")
         }
@@ -180,6 +159,7 @@
         msg.fadeIn()
         msg.delay(5000).fadeOut()
         }
+<<<<<<< HEAD
 
         function changeNickname() {
         $('#changeuser').modal()
@@ -311,6 +291,8 @@
 
         })
 
+=======
+>>>>>>> origin/Migration-AngularJS
     </script>
 
 
