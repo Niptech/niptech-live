@@ -66,6 +66,7 @@
                 font-weight: bold;"
                 value="@getYouTubeId()">
             </div>
+                @if(TwitterClient.isValid){
             <div class="twitterstreamswitch">
                 <input type="checkbox" name="twitterstreamswitch" class="twitterstreamswitch-checkbox" id="mytwitterstreamswitch" @getTwitterStreamStatus()
                 style="display: none;">
@@ -74,6 +75,7 @@
                     <div class="twitterstreamswitch-switch"></div>
                 </label>
             </div>
+                }
             <div class="control-group">
                 <div class="controls" style="margin-left: 0px;">
                     <button type="submit" class="nip-button" style="font-size: 30px; padding: 20px 15px;">Appliquer</button>

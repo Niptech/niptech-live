@@ -84,7 +84,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
 
         case _ =>
           notifyAll("talk", text)
-          if (Cache.getOrElse[Boolean]("twitterBroadcast")(false))
+          if (Cache.getOrElse[Boolean]("twitterBroadcast")(false) && TwitterClient.isValid)
             try {
               TwitterClient.twitter.updateStatus((username + " - " + text).take(140))
             }
