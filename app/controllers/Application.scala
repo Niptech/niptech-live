@@ -40,6 +40,9 @@ object Application extends Controller {
     }
   }
 
+  def changeUserDialog = Action {
+      Ok(views.html.changeUsername())
+    }
 
   def configure(episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
     implicit request =>
@@ -69,6 +72,10 @@ object Application extends Controller {
   }
 
   def newUserid = new java.util.Date().getTime().toString
+
+  def getUsername(userid: String) = Action {
+    Ok(ChatRoom.username(userid))
+  }
 
   def twitterLogin = Action {
     implicit request =>
