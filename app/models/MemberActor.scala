@@ -57,14 +57,14 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       sender ! Connected(chatEnumerator)
       Akka.system.scheduler.scheduleOnce(1 second) {
      //   self ! ChatMessage(msg)
-        notifyAll("talk", username + " s'est connecté à la ChatRoom")
+        // notifyAll("talk", username + " s'est connecté à la ChatRoom")
       }
     }
 
     case Disconnect() => {
       Logger.debug(username + " disconnected")
       isConnected = false
-      notifyAll("talk", username + " s'est déconnecté de la ChatRoom")
+      //notifyAll("talk", username + " s'est déconnecté de la ChatRoom")
     }
 
     case NotifyJoin() => {
@@ -100,7 +100,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
     case ChangeName(newname, image) =>
       ChatRoom.members -= username
       ChatRoom.members += xml.Utility.escape(newname)
-      notifyAll("talk", username + " a changé son nom en " + newname)
+      // notifyAll("talk", username + " a changé son nom en " + newname)
       Logger.info(username + " a changé son nom en " + newname)
       username = xml.Utility.escape(newname)
       image.map(url => imageUrl = url)
@@ -121,7 +121,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       Logger.debug(username + " quitte la chatroom")
       ChatRoom.members -= username
       Cache.remove(userid)
-      notifyAll("talk", username + " a quitté la ChatRoom")
+      // notifyAll("talk", username + " a quitté la ChatRoom")
       Akka.system.eventStream.unsubscribe(self, classOf[ChatMessage])
       Akka.system.stop(self)
 
