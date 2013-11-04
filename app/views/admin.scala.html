@@ -3,6 +3,13 @@
 @import play.api.cache.Cache
 @import play.api.Play.current
 
+
+    @getEpisodeNb() = @{
+        Cache.getOrElse[String]("episodeNb") {
+            ""
+        }
+    }
+
     @getYouTubeId() = @{
         Cache.getOrElse[String]("youtubeid") {
             ""
@@ -42,7 +49,7 @@
                 font-size: 23px;
                 font-family: Trebuchet, Arial, sans-serif;
                 font-weight: bold;"
-                value="@getYouTubeId()">
+                value="@getEpisodeNb()">
             </div>
             <div class="control-group" style="height: 63px;">
                 <div class="onairswitch" style="float: left;">

@@ -55,7 +55,7 @@
             <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
                 <span class="nip-title">
                     Chat board</span>
-                <a class="nip-title-button pull-right" ng-click="openChangeUsernameDlg()">
+                <a class="nip-title-button pull-right" style="text-decoration: none; color: white;" ng-click="openChangeUsernameDlg()">
                     Changer de nom</a>
             </div>
             <div id="onChat">
@@ -63,7 +63,7 @@
                     <div id="message-list" scroll-glue>
                         <div class="message" ng-repeat="msg in messages" ng-class="{myMessage: msg.user == currentUser}">
                             <!-- <img style="width:37px;height:28px;margin-left:-28px;margin-top:-5px;" src="@routes.Assets.at("images/bg-avatar.png")"> -->
-                            <div id="nip-bg-avatar"></div>
+                            <div id="niptech-bg-avatar"></div>
                             <img ng-hide="msg.avatar == ''" style="display:inline-block;margin-top:-4px;margin-left:-35px;width:24px;height:24px;" ng-src="{{msg.avatar}}">
                             <span>{{msg.user}}</span>
                             <em>{{msg.time}}</em>
