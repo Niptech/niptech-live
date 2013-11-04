@@ -21,7 +21,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import twitter4j.auth.RequestToken
 import scala.util.Random
-import play.api.Logger
+import play.api.{Routes, Logger}
 import akka.util.Timeout
 
 
@@ -181,5 +181,15 @@ object Application extends Controller {
     req => req.session.get("admin"),
     _ => Forbidden(views.html.login(Some("Il faut être connecté pour accéder à la page d'administration")))
   )(username => action)
+
+
+
+  def javascriptRoutes = Action { implicit request =>
+        Ok(
+            Routes.javascriptRouter("jsRoutes")(
+               routes.javascript.Application.chat
+                )
+            ).as("text/javascript")
+      }
 
 }
