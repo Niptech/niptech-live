@@ -21,7 +21,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import twitter4j.auth.RequestToken
 import scala.util.Random
-import play.api.Logger
+import play.api.{Routes, Logger}
 import akka.util.Timeout
 
 
@@ -40,6 +40,9 @@ object Application extends Controller {
     }
   }
 
+  def changeUserDialog = Action {
+      Ok(views.html.changeUsername())
+    }
 
   def configure(episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
     implicit request =>
@@ -69,6 +72,10 @@ object Application extends Controller {
   }
 
   def newUserid = new java.util.Date().getTime().toString
+
+  def getUsername(userid: String) = Action {
+    Ok(ChatRoom.username(userid))
+  }
 
   def twitterLogin = Action {
     implicit request =>
@@ -174,5 +181,15 @@ object Application extends Controller {
     req => req.session.get("admin"),
     _ => Forbidden(views.html.login(Some("Il faut être connecté pour accéder à la page d'administration")))
   )(username => action)
+
+
+
+  def javascriptRoutes = Action { implicit request =>
+        Ok(
+            Routes.javascriptRouter("jsRoutes")(
+               routes.javascript.Application.chat
+                )
+            ).as("text/javascript")
+      }
 
 }
