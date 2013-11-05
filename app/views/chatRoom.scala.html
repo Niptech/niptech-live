@@ -68,7 +68,7 @@
                             <span>{{msg.user}}</span>
                             <em>{{msg.time}}</em>
                             <br/>
-                            <p>{{msg.message}}</p>
+                            <p ng-bind-html-unsafe="msg.message"></p>
                         </div>
                     </div>
                     <textarea id="talk" ng-model="currentMessage" ng-enter="sendText(currentMessage)"></textarea>
