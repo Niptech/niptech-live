@@ -49,7 +49,9 @@ angular.module('liveChat.controllers', []).
                 min = "0" + min;
             }
             data.time = now.getHours() + ':' + min;
-            $scope.messages.push(data);
+            if (data.message != "") {
+            	$scope.messages.push(data);
+            }
             $scope.users = data.members;
             $scope.$apply();
         }

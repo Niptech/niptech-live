@@ -52,12 +52,13 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
           "kind" -> JsString("talk"),
           "user" -> JsString(username),
           "avatar" -> JsString(imageUrl),
-          "message" -> JsString(username + " s'est connecté à la ChatRoom"),
+          "message" -> JsString("Vous êtes connecté à la ChatRoom"),
           "members" -> JsArray(ChatRoom.members.map(JsString))))
       sender ! Connected(chatEnumerator)
       Akka.system.scheduler.scheduleOnce(1 second) {
-     //   self ! ChatMessage(msg)
-        // notifyAll("talk", username + " s'est connecté à la ChatRoom")
+        self ! ChatMessage(msg)
+        notifyAll("talk", "") 
+        //notifyAll("talk", username + " s'est connecté à la ChatRoom") 
       }
     }
 
@@ -65,6 +66,8 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       Logger.debug(username + " disconnected")
       isConnected = false
       //notifyAll("talk", username + " s'est déconnecté de la ChatRoom")
+      // Empty message to update the list of users
+      notifyAll("talk", "")
     }
 
     case NotifyJoin() => {
@@ -98,11 +101,22 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
     case GetUsername() => sender ! username
 
     case ChangeName(newname, image) =>
+      val escapedNewname = xml.Utility.escape(newname)
       ChatRoom.members -= username
-      ChatRoom.members += xml.Utility.escape(newname)
+      ChatRoom.members += escapedNewname
       // notifyAll("talk", username + " a changé son nom en " + newname)
+      val msg = JsObject(
+        Seq(
+          "kind" -> JsString("talk"),
+          "user" -> JsString(username),
+          "avatar" -> JsString(imageUrl),
+          "message" -> JsString("Vous avez changé votre nom en " + escapedNewname),
+          "members" -> JsArray(ChatRoom.members.map(JsString))))
+      self ! ChatMessage(msg)
+      // Empty message to update the list of users
+      notifyAll("talk", "")
       Logger.info(username + " a changé son nom en " + newname)
-      username = xml.Utility.escape(newname)
+      username = escapedNewname
       image.map(url => imageUrl = url)
 
     case ChatMessage(msg: JsObject) =>
@@ -121,7 +135,9 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       Logger.debug(username + " quitte la chatroom")
       ChatRoom.members -= username
       Cache.remove(userid)
-      // notifyAll("talk", username + " a quitté la ChatRoom")
+      //notifyAll("talk", username + " a quitté la ChatRoom")
+      // Empty message to update the list of users
+      notifyAll("talk", "")
       Akka.system.eventStream.unsubscribe(self, classOf[ChatMessage])
       Akka.system.stop(self)
 
