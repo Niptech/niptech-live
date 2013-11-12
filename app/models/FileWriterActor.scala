@@ -14,10 +14,8 @@ class FileWriterActor extends Actor {
     case ChatMessage(msg: JsObject) =>
       Cache.getAs[String]("episodeNb").map {
         episode =>
-          if (episode != "") {
+          if (episode != "")
             writeFile(episode, msg)
-            Logger.debug("Reçu par FileWriter : l" + episode + "l MSG=>" + msg.toString)
-          }
       }
   }
 
