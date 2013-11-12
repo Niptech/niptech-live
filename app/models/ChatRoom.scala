@@ -41,6 +41,9 @@ object ChatRoom {
 
     Logger.info("ChatRoom initialized")
 
+    val writerActor = Akka.system.actorOf(Props(new FileWriterActor()), "FileWriter")
+    Akka.system.eventStream.subscribe(writerActor, classOf[ChatMessage])
+
   }
 
   def join(userid: String) = {
