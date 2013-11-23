@@ -1,8 +1,10 @@
-@(user: Option[String])(content: Html)
+@(user: Option[String], iframe:Boolean = false)(content: Html)
 
 @import play.api.cache.Cache
 @import play.api.Play.current
+@import play.api.Play.configuration
 
+@stylesheet() = @{configuration.getString("stylesheet").getOrElse("")}
 
 <!DOCTYPE html>
 
@@ -13,7 +15,7 @@
 		<meta property="og:image" content="http://live.niptech.com/assets/images/Thumbnail.jpg" />
 		<meta property="og:description" content="Diffusion du live niptech tous les mardi soir à 21h00. Venez nous rejoindre et partagez vos commentaires." />
         <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/niptechlive-main.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at(stylesheet)">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
@@ -36,7 +38,8 @@
             ng-init="connect(@username)"
         }
     >
-        
+
+        @if(!iframe) {
         <div class="topbar" style="background-color: rgb(246,246,246); border-bottom: 1px solid lightgray; box-shadow: 0px 1px 9px lightgray; z-index: 5;">
             <div id="nip-border-top"></div>
             <div class="row-fluid">
@@ -55,13 +58,14 @@
                 </div>
             </div>
         </div>
+        }
 
         <div style="margin-top:3px;">
 
                 @content
 
-
-                <br>
+        @if(!iframe) {
+        <br>
 
         <footer style="text-align: center; font-size: 12px;">
                 <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/niptech-podcast/" target="_blank">
@@ -76,7 +80,8 @@
                 la communauté</a>
         <a style="margin: 15px; text-decoration: underline;" href="https://github.com/Niptech/niptech-live" target="_blank">
                 fork me on github</a>
-                </footer>
+        </footer>
+        }
         </div>
         
     </body>

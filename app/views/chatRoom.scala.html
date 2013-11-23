@@ -1,6 +1,7 @@
-@(username: String, twitterId: String)(implicit request: RequestHeader)
+@(username: String, twitterId: String, iframe:Boolean = false)(implicit request: RequestHeader)
 
 @import play.api.cache.Cache
+@import play.api.Play.configuration
 @import play.api.Play.current
 @import models.ChatRoom
 
@@ -16,7 +17,12 @@
         }
     }
 
-@main(Some(username)) {
+@twitterLink() = @{configuration.getString("link.twitter").getOrElse("")}
+@fbLink() = @{configuration.getString("link.facebook").getOrElse("")}
+@gplusLink() = @{configuration.getString("link.googleplus").getOrElse("")}
+
+
+@main(Some(username), iframe) {
 
     <div id="onError" class="alert-message error">
         <p>
@@ -38,13 +44,13 @@
                     Synchroniser avec le direct</a>
                 <span name="twitterShare" id="twitterShare" class="pull-right" style="margin-right:20px; margin-top: 10px; font-family: Hero; color: rgb(131,131,131); font-size: 18px;">
                     Partager
-                    <a href="https://twitter.com/intent/tweet?button_hashtag=nwlive&text=Rejoignez+nous+sur+la+chatroom+et+suivez+@@niptechpodcast+en+direct.&url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
+                    <a href="@twitterLink" target="_blank" style="margin-left: 5px;">
                         <img src="@routes.Assets.at("images/twtr-nt.png")">
                     </a>
-                    <a href="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flive.niptech.com&p[summary]=Rejoignez+nous+sur+la+chatroom+et+suivez+le+live+niptech+en+direct" target="_blank" style="margin-left: 5px;">
+                    <a href="@fbLink" target="_blank" style="margin-left: 5px;">
                         <img src="@routes.Assets.at("images/fb-nt.png")">
                     </a>
-                    <a href="https://plus.google.com/share?url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
+                    <a href="@gplusLink" target="_blank" style="margin-left: 5px;">
                         <img src="@routes.Assets.at("images/gplus-nt.png")">
                     </a>
                 </span>

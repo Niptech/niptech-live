@@ -77,7 +77,7 @@ object Application extends Controller {
       val userid = request.session.get("userid").getOrElse(newUserid)
       if (Akka.system.actorFor("/user/" + userid).isTerminated)
         ChatRoom.join(userid)
-      Ok(views.html.chatRoomFrame(userid, "")) withSession ("userid" -> userid)
+      Ok(views.html.chatRoom(userid, "", true)) withSession ("userid" -> userid)
   }
 
   def newUserid = new java.util.Date().getTime().toString
