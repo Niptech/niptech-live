@@ -1,8 +1,9 @@
 package models
 
+
 import akka.actor._
 import scala.concurrent.duration._
-import scala.util.Random
+import scala.util.{Try, Random}
 import play.api._
 
 import cache.Cache
@@ -15,6 +16,9 @@ import play.api.Play._
 import play.api.libs.concurrent.Execution.Implicits._
 import twitter4j._
 import com.typesafe.config.ConfigFactory
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsString
+import play.api.libs.json.JsObject
 
 
 class Member(var userid: String, var username: String, var imageUrl: String) extends Actor {
@@ -57,8 +61,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       sender ! Connected(chatEnumerator)
       Akka.system.scheduler.scheduleOnce(1 second) {
         self ! ChatMessage(msg)
-        notifyAll("talk", "") 
-        //notifyAll("talk", username + " s'est connecté à la ChatRoom") 
+        notifyAll("talk", "")
       }
     }
 
@@ -80,6 +83,11 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       text match {
         case save if text startsWith ("save:") =>
           Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
+        case tirage if text startsWith ("tirage ") =>
+          val parms = tirage.split(" ")
+          val nbGagnants = Try(parms(1).toInt)
+          val preuve = parms(2)
+          nbGagnants.map(n => self ! Tirage(n, preuve))
         case share if text startsWith ("shareOnTwitter:") =>
           Logger.debug("Sharing on twitter: " + share.takeRight(share.size - 15))
           Cache.getAs[Twitter](username).foreach(t => t.updateStatus(share.takeRight(share.size - 15).take(140)))
@@ -123,6 +131,20 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       Logger.debug(username + " - Reçu : " + msg.toString)
       chatChannel.push(msg)
 
+    case Tirage(nbGagnants: Int, preuve: String) =>
+      val winners = Random.shuffle(ChatRoom.membersActorsId).take(nbGagnants)
+      winners.map {
+        winnerId =>
+          val won = JsObject(
+            Seq(
+              "kind" -> JsString("talk"),
+              "user" -> JsString("GAGNANT"),
+              "avatar" -> JsString(""),
+              "message" -> JsString(preuve),
+              "members" -> JsArray(ChatRoom.members.map(JsString))))
+          Akka.system.actorFor("/user/" + winnerId) ! ChatMessage(won)
+      }
+
     case CheckTimeout() =>
       val mustQuit = (!isConnected && disconnectedDeadline.isOverdue()) || (isConnected && connectedDeadline.isOverdue())
       Logger.debug("Timeout for" + username + " value :" + mustQuit)
@@ -134,6 +156,7 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
     case Quit() =>
       Logger.debug(username + " quitte la chatroom")
       ChatRoom.members -= username
+      ChatRoom.membersActorsId -= userid
       Cache.remove(userid)
       //notifyAll("talk", username + " a quitté la ChatRoom")
       // Empty message to update the list of users
@@ -202,5 +225,7 @@ case class ChangeName(newName: String, imageUrl: Option[String])
 case class Connected(enumerator: Enumerator[JsValue])
 
 case class CannotConnect(msg: String)
+
+case class Tirage(nbGagnants: Int, preuve: String)
 
 

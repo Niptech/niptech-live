@@ -49,7 +49,9 @@ angular.module('liveChat.controllers', []).
                 min = "0" + min;
             }
             data.time = now.getHours() + ':' + min;
-            if (data.message != "") {
+            if (data.user == "GAGNANT")
+                alert("Tu es GAGNANT. Le mot à donner comme preuve: " + data.message)
+            else if (data.message != "") {
             	$scope.messages.push(data);
             }
             $scope.users = data.members;

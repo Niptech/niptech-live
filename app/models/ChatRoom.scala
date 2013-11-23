@@ -4,13 +4,14 @@ import akka.actor._
 import scala.concurrent.duration._
 import scala.concurrent._
 import play.api._
+import play.api.Play.configuration
+import play.api.Play.current
 
 import play.api.libs.concurrent._
 
 import akka.util.Timeout
 import akka.pattern.ask
 
-import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
 import twitter4j._
 import scala.collection.JavaConversions._
@@ -26,6 +27,8 @@ object ChatRoom {
   implicit val timeout = Timeout(5 second)
 
   val members = collection.mutable.ArrayBuffer[String]()
+  val membersActorsId = collection.mutable.ArrayBuffer[String]()
+
 
   def initialize = {
 
@@ -33,11 +36,9 @@ object ChatRoom {
 
 
     if (TwitterClient.isValid) {
-
       initTwitterListener
     }
 
-    // initTwitterListener
 
     Logger.info("ChatRoom initialized")
 
@@ -49,6 +50,7 @@ object ChatRoom {
   def join(userid: String) = {
     var username = newUserid
     members += username
+    membersActorsId += userid
     Logger.info(members.size.toString + " membre connectés")
     val memberActor = Akka.system.actorOf(Props(new Member(userid, username, "")), userid)
     val r = Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
@@ -133,7 +135,9 @@ object ChatRoom {
       }
     }
     twitterStream.addListener(listener)
-    twitterStream.filter(new FilterQuery(0, Array[Long](), Array[String]("niptechlive", "#quote #niptech")))
+    val twitterName = configuration.getString("twitter.User").getOrElse("")
+    val hashTags = configuration.getString("twitter.HashTags").getOrElse("")
+    twitterStream.filter(new FilterQuery(0, Array[Long](), Array[String](twitterName, hashTags)))
   }
 
   def nbUsers: Int = members.size
