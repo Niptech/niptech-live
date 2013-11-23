@@ -8,7 +8,7 @@
 
 <html ng-app=liveChat>
     <head>
-        <title>niptech Live</title>
+        <title>Live</title>
         <meta property="og:title" content="Niptech live chatroom" />
 		<meta property="og:image" content="http://live.niptech.com/assets/images/Thumbnail.jpg" />
 		<meta property="og:description" content="Diffusion du live niptech tous les mardi soir à 21h00. Venez nous rejoindre et partagez vos commentaires." />
@@ -36,25 +36,7 @@
             ng-init="connect(@username)"
         }
     >
-        
-        <div class="topbar" style="background-color: rgb(246,246,246); border-bottom: 1px solid lightgray; box-shadow: 0px 1px 9px lightgray; z-index: 5;">
-            <div id="nip-border-top"></div>
-            <div class="row-fluid">
-                <div class="span1"></div>
-                <div class="span9" style="border-right: 1px solid lightgray; margin-left: 0px;">
-                        <div id="live-logo"></div>
-                        <span id="live-title">{{ title }}</span>
-                </div>
-                <div class="span2" style="text-align: center; margin-left: 0px;">
-                        @user.map { username =>
-                            <p style="color: rgb(1,112,186); font-size: 20px; margin-top:20px;">DECONNEXION</p>
-                            <p>
-                                <a href="@routes.Application.doLogout()"><img src="@routes.Assets.at("images/disconnect.png")"></a>
-                            </p>
-                        }
-                </div>
-            </div>
-        </div>
+
 
         <div style="margin-top:3px;">
 

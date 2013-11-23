@@ -35,9 +35,9 @@ object ChatRoom {
     if (TwitterClient.isValid) {
 
       initTwitterListener
-    }
+      Logger.info("twitter listener initialized")
 
-    // initTwitterListener
+    }
 
     Logger.info("ChatRoom initialized")
 
@@ -93,7 +93,7 @@ object ChatRoom {
       @Override
       def onStatus(st: Status) = {
         twitterActor ! Tweet(st)
-        val text = st.getText
+  /*      val text = st.getText
         if (text.contains("#quote")) {
           Logger.info("NEW QUOTE : " + st.getText)
           val quotes = ConfigFactory.load("niptechquotes").getStringList("quotes")
@@ -104,7 +104,7 @@ object ChatRoom {
           Logger.info(content)
           writer.write(content)
           writer.close()
-        }
+        }                    */
       }
 
       @Override
@@ -133,7 +133,7 @@ object ChatRoom {
       }
     }
     twitterStream.addListener(listener)
-    twitterStream.filter(new FilterQuery(0, Array[Long](), Array[String]("niptechlive", "#quote #niptech")))
+    twitterStream.filter(new FilterQuery(0, Array[Long](), Array[String]("willandco", "#waclive")))
   }
 
   def nbUsers: Int = members.size

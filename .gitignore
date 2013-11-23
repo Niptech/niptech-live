@@ -14,6 +14,7 @@ dist
 /RUNNING_PID
 /.settings
 conf/twitter4j.conf
+conf/twitter4j.willandco.conf
 .cache
 
 Procfile

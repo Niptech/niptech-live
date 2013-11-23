@@ -1,7 +1,7 @@
 @()
     <div style="background-image: url('assets/images/bg-niptech.png'); font-family: Hero">
     <div class="modal-header" style="text-align: center; font-size: 40px; line-height: 45px;">
-        Connectez vous au live chat niptech !
+        Connectez vous au Live Chat WAC !
     </div>
     <div class="modal-body">
         @if(TwitterClient.isValid){
@@ -11,12 +11,12 @@
         </a>
 
         <p style="margin-top:10px;color:rgb(131,131,131); font-size:10px;text-align:center;">
-            votre @@nom_utilisateur_twitter sera utilisé comme nickname
+            votre @@nom_utilisateur_twitter sera utilisé comme pseudo
         </p>
 
-        <p style="margin-top: 20px;font-size:30px;">ou saisissez votre nickname</p>
+        <p style="margin-top: 20px;font-size:30px;">ou saisissez votre pseudo</p>
         } else{
-            <p style="margin-top: 20px;font-size:30px;">Saisissez votre nickname</p>
+            <p style="margin-top: 20px;font-size:30px;">Saisissez votre pseudo</p>
         }
         <input type="input" name="username" id="username" ng-model="username"
                style="margin-top: 5px;
