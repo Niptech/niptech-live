@@ -71,6 +71,15 @@ object Application extends Controller {
       Ok(views.html.chatRoom(userid, "")) withSession ("userid" -> userid)
   }
 
+
+  def chatRoomFrame = Action {
+    implicit request =>
+      val userid = request.session.get("userid").getOrElse(newUserid)
+      if (Akka.system.actorFor("/user/" + userid).isTerminated)
+        ChatRoom.join(userid)
+      Ok(views.html.chatRoomFrame(userid, "")) withSession ("userid" -> userid)
+  }
+
   def newUserid = new java.util.Date().getTime().toString
 
   def getUsername(userid: String) = Action {

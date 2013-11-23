@@ -16,7 +16,7 @@
         }
     }
 
-@main(Some(username)) {
+@mainWFrame(Some(username)) {
 
     <div id="onError" class="alert-message error">
         <p>
@@ -24,12 +24,10 @@
         </p>
     </div>
 
-    <div class="row-fluid" style="background-image: url('@routes.Assets.at("images/bg-niptech.png")');">
-        <div class="span1" style="height: 400px;"></div>
+    <div class="row-fluid">
         <div class="span5" style="margin-left: 0px; border-left: 1px solid lightgray;">
             <div style="height: 45px; background-color: white">
-                <span class="nip-title">
-                    Video board</span>
+                <span class="nip-title">Live</span>
                 <span style="float:right; font-size: 18px; margin-top:18px;margin-right:5px;)">@getEpisodeNb()</span>
             </div>
             <div id="ytplayer" style="height: 350px;"></div>
@@ -38,13 +36,13 @@
                     Synchroniser avec le direct</a>
                 <span name="twitterShare" id="twitterShare" class="pull-right" style="margin-right:20px; margin-top: 10px; font-family: Hero; color: rgb(131,131,131); font-size: 18px;">
                     Partager
-                    <a href="https://twitter.com/intent/tweet?button_hashtag=nwlive&text=Rejoignez+nous+sur+la+chatroom+et+suivez+@@niptechpodcast+en+direct.&url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
+                    <a href="https://twitter.com/intent/tweet?button_hashtag=WAC&text=Rejoins+nous+sur+la+chatroom+et+suis+@@willandco+en+direct.&url=http://www.willandco.fr/live" target="_blank" style="margin-left: 5px;">
                         <img src="@routes.Assets.at("images/twtr-nt.png")">
                     </a>
-                    <a href="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flive.niptech.com&p[summary]=Rejoignez+nous+sur+la+chatroom+et+suivez+le+live+niptech+en+direct" target="_blank" style="margin-left: 5px;">
+                    <a href="http://www.facebook.com/sharer/sharer.php?u=http://www.willandco.fr/live&p[summary]=Rejoins+nous+sur+la+chatroom+et+suis+le+live+WAC+en+direct" target="_blank" style="margin-left: 5px;">
                         <img src="@routes.Assets.at("images/fb-nt.png")">
                     </a>
-                    <a href="https://plus.google.com/share?url=http://live.niptech.com" target="_blank" style="margin-left: 5px;">
+                    <a href="https://plus.google.com/share?url=http://www.willandco.fr/live" target="_blank" style="margin-left: 5px;">
                         <img src="@routes.Assets.at("images/gplus-nt.png")">
                     </a>
                 </span>
@@ -54,7 +52,7 @@
         <div class="span4" style="margin-left: 0px; margin-right: 0px; border-left: 1px solid lightgray; width: 34%">
             <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
                 <span class="nip-title">
-                    Chat board</span>
+                    Chat</span>
                 <a class="nip-title-button pull-right" style="text-decoration: none; color: white;" ng-click="openChangeUsernameDlg()">
                     Changer de nom</a>
             </div>
@@ -96,7 +94,6 @@
             </div>
         </div>
     </div>
-
     <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
     <script type="text/javascript" charset="utf-8">
 
