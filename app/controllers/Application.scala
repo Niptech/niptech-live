@@ -41,8 +41,8 @@ object Application extends Controller {
   }
 
   def changeUserDialog = Action {
-      Ok(views.html.changeUsername())
-    }
+    Ok(views.html.changeUsername())
+  }
 
   def configure(episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
     implicit request =>
@@ -68,17 +68,10 @@ object Application extends Controller {
       val userid = request.session.get("userid").getOrElse(newUserid)
       if (Akka.system.actorFor("/user/" + userid).isTerminated)
         ChatRoom.join(userid)
-      Ok(views.html.chatRoom(userid, "")) withSession ("userid" -> userid)
+      val frame = configuration.getBoolean("frame").getOrElse(false)
+      Ok(views.html.chatRoom(userid, "", frame)) withSession ("userid" -> userid)
   }
 
-
-  def chatRoomFrame = Action {
-    implicit request =>
-      val userid = request.session.get("userid").getOrElse(newUserid)
-      if (Akka.system.actorFor("/user/" + userid).isTerminated)
-        ChatRoom.join(userid)
-      Ok(views.html.chatRoom(userid, "", true)) withSession ("userid" -> userid)
-  }
 
   def newUserid = new java.util.Date().getTime().toString
 
@@ -192,13 +185,13 @@ object Application extends Controller {
   )(username => action)
 
 
-
-  def javascriptRoutes = Action { implicit request =>
-        Ok(
-            Routes.javascriptRouter("jsRoutes")(
-               routes.javascript.Application.chat
-                )
-            ).as("text/javascript")
-      }
+  def javascriptRoutes = Action {
+    implicit request =>
+      Ok(
+        Routes.javascriptRouter("jsRoutes")(
+          routes.javascript.Application.chat
+        )
+      ).as("text/javascript")
+  }
 
 }
