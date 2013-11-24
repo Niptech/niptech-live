@@ -1,8 +1,7 @@
 package models
 
-
-import akka.actor._
 import scala.concurrent.duration._
+
 import scala.util.{Try, Random}
 import play.api._
 
@@ -12,6 +11,9 @@ import play.api.libs.json._
 import play.api.libs.iteratee._
 import play.api.libs.concurrent._
 
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+
 import play.api.Play._
 import play.api.libs.concurrent.Execution.Implicits._
 import twitter4j._
@@ -19,6 +21,10 @@ import com.typesafe.config.ConfigFactory
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsString
 import play.api.libs.json.JsObject
+
+import akka.actor._
+import akka.util.Timeout
+import akka.pattern.ask
 
 
 class Member(var userid: String, var username: String, var imageUrl: String) extends Actor {
@@ -132,8 +138,8 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       chatChannel.push(msg)
 
     case Tirage(nbGagnants: Int, preuve: String) =>
-      val winners = Random.shuffle(ChatRoom.membersActorsId).take(nbGagnants)
-      winners.map {
+      val winners = Random.shuffle(ChatRoom.membersActorsId.filter(id => id != userid)).take(nbGagnants)
+      val liste = winners.map {
         winnerId =>
           val won = JsObject(
             Seq(
@@ -142,8 +148,12 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
               "avatar" -> JsString(""),
               "message" -> JsString(preuve),
               "members" -> JsArray(ChatRoom.members.map(JsString))))
-          Akka.system.actorFor("/user/" + winnerId) ! ChatMessage(won)
+          val member = Akka.system.actorFor("/user/" + winnerId)
+          member ! ChatMessage(won)
+          ChatRoom.username(winnerId)
       }
+      notifyAll("talk", "Les gagnants sont " + liste.mkString(", "))
+
 
     case CheckTimeout() =>
       val mustQuit = (!isConnected && disconnectedDeadline.isOverdue()) || (isConnected && connectedDeadline.isOverdue())
