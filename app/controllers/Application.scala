@@ -44,8 +44,11 @@ object Application extends Controller {
     Ok(views.html.changeUsername())
   }
 
-  def configure(episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
+  def configure(stylesheet: Option[String], episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
     implicit request =>
+      stylesheet foreach {
+        id => Cache.set("stylesheet", id)
+      }
       episodeNb foreach {
         id => Cache.set("episodeNb", id)
       }

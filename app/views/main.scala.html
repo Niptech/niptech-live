@@ -4,19 +4,33 @@
 @import play.api.Play.current
 @import play.api.Play.configuration
 
-@stylesheet() = @{configuration.getString("stylesheet").getOrElse("")}
+@choice() = @{ Cache.getOrElse[String]("stylesheet"){
+    val sheets = configuration.getString("stylesheets").getOrElse("").split(",")
+    sheets(0)
+    }
+}
+
+@stylesheet() = @{
+    "stylesheets/" + choice + "-main.css"
+}
+
+@favicon() = @{
+    "images/" + choice + "-favicon.png"
+}
+
+@tagline() = @{configuration.getString(choice + "-tagline").getOrElse("")}
 
 <!DOCTYPE html>
 
 <html ng-app=liveChat>
     <head>
-        <title>niptech Live</title>
+        <title>@choice Live</title>
         <meta property="og:title" content="Niptech live chatroom" />
-		<meta property="og:image" content="http://live.niptech.com/assets/images/Thumbnail.jpg" />
+		<meta property="og:image" content=http://live.niptech.com/assets/images/niptech-thumbnail.jpg" />
 		<meta property="og:description" content="Diffusion du live niptech tous les mardi soir à 21h00. Venez nous rejoindre et partagez vos commentaires." />
         <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at(stylesheet)">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at(favicon)">
 
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))"></script>
@@ -46,11 +60,11 @@
                 <div class="span1"></div>
                 <div class="span9" style="border-right: 1px solid lightgray; margin-left: 0px;">
                         <div id="live-logo"></div>
-                        <span id="live-title">{{ title }}</span>
+                        <span id="live-title">@tagline</span>
                 </div>
                 <div class="span2" style="text-align: center; margin-left: 0px;">
                         @user.map { username =>
-                            <p style="color: rgb(1,112,186); font-size: 20px; margin-top:20px;">DECONNEXION</p>
+                            <p id="deco-button">DECONNEXION</p>
                             <p>
                                 <a href="@routes.Application.doLogout()"><img src="@routes.Assets.at("images/disconnect.png")"></a>
                             </p>
@@ -68,17 +82,17 @@
         <br>
 
         <footer style="text-align: center; font-size: 12px;">
-                <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/niptech-podcast/" target="_blank">
+        <a class="footer-links" href="http://www.niptech.com/podcast/niptech-podcast/" target="_blank">
                 le podcast</a>
-        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/category/emissions/" target="_blank">
+        <a class="footer-links" href="http://www.niptech.com/podcast/category/emissions/" target="_blank">
                 les émissions</a>
-        <a style="margin: 15px; text-decoration: underline;" href="http://www.niptech.com/podcast/category/blog/" target="_blank">
+        <a class="footer-links" href="http://www.niptech.com/podcast/category/blog/" target="_blank">
                 le blog</a>
-        <a style="margin: 15px; text-decoration: underline;" href="http://inspire.niptech.com/" target="_blank">
+        <a class="footer-links" href="http://inspire.niptech.com/" target="_blank">
                 les quotes</a>
-        <a style="margin: 15px; text-decoration: underline;" href="https://plus.google.com/u/0/communities/104157063722839703523" target="_blank">
+        <a class="footer-links" href="https://plus.google.com/u/0/communities/104157063722839703523" target="_blank">
                 la communauté</a>
-        <a style="margin: 15px; text-decoration: underline;" href="https://github.com/Niptech/niptech-live" target="_blank">
+        <a class="footer-links" href="https://github.com/Niptech/niptech-live" target="_blank">
                 fork me on github</a>
         </footer>
         }

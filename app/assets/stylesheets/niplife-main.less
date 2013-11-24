@@ -1,11 +1,13 @@
+@theme-color: #99c33a;
+
 html, body {
   background-color: #fff;
-  color: #366AA2;
+  color: @theme-color;
   background-image: url('/assets/images/bg-niptech.png');
 }
 
 h1, h2, h3, h4, h5 {
-  color: #366AA2;
+  color: @theme-color;
 }
 
 .container > footer p {
@@ -123,7 +125,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .me {
-  color: blue;
+  color: @theme-color;
   font-weight: bold;
 }
 
@@ -331,7 +333,7 @@ h1, h2, h3, h4, h5 {
 
 /* Logo en haut à gauche de la page */
 div#live-logo {
-  background-image: url(/assets/images/niptech.png);
+  background-image: url(/assets/images/niplife.png);
   background-repeat: no-repeat;
   width: 192px;
   height: 100px;
@@ -343,7 +345,7 @@ div#live-logo {
 div#nip-border-top {
   width: 100%;
   height: 10px;
-  background-color: rgb(43, 134, 203);
+  background-color: @theme-color;
 }
 
 /* Titre de la page */
@@ -361,7 +363,7 @@ div#niptech-bg-avatar {
   margin-left: -30px;
   width: 36px;
   height: 28px;
-  background-image: url(/assets/images/niptech-avatar.png);
+  background-image: url(/assets/images/niplife-avatar.png);
   background-repeat: no-repeat;
   padding: 0;
 }
@@ -375,7 +377,7 @@ div#niptech-bg-avatar {
   -moz-border-left-colors: none;
   -moz-border-right-colors: none;
   -moz-border-top-colors: none;
-  background-color: rgb(43, 134, 203);
+  background-color: @theme-color;
   border-color: #BBBBBB #BBBBBB #A2A2A2;
   border-image: none;
   border-radius: 0px;
@@ -411,7 +413,7 @@ div#niptech-bg-avatar {
 .nip-title-button {
   font-size: 12px;
   font-weight: lighter;
-  background-color: rgb(43, 134, 203);
+  background-color: @theme-color;
   color: white;
   cursor: pointer;
   vertical-align: -20px;
@@ -425,6 +427,30 @@ div#niptech-bg-avatar {
   text-decoration: none;
 }
 
+#deco-button {
+  color: @theme-color;
+  font-size: 20px;
+  margin-top:20px;
+}
+
+.footer-links {
+  color: @theme-color;
+  margin: 15px;
+  text-decoration: underline;
+}
+
 #twitterShare a:hover {
       text-decoration: none;
+}
+
+.twtr-nt{
+  content:url("/assets/images/twtr-nt-niplife.png");
+}
+
+.fb-nt {
+  content: url("/assets/images/fb-nt-niplife.png");
+}
+
+.gplus-nt {
+  content: url("/assets/images/gplus-nt-niplife.png");
 }
