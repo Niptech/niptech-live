@@ -41,7 +41,8 @@ object Application extends Controller {
   }
 
   def changeUserDialog = Action {
-    Ok(views.html.changeUsername())
+    val frame = configuration.getBoolean("frame").getOrElse(false)
+    Ok(views.html.changeUsername(frame))
   }
 
   def configure(stylesheet: Option[String], episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {

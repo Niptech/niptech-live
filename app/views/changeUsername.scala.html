@@ -1,10 +1,10 @@
-@()
+@(iframe: Boolean)
     <div style="background-image: url('assets/images/bg-niptech.png'); font-family: Hero">
     <div class="modal-header" style="text-align: center; font-size: 40px; line-height: 45px;">
-        Connectez vous au live chat niptech !
+        Connectez vous au live chat !
     </div>
     <div class="modal-body">
-        @if(TwitterClient.isValid){
+        @if(TwitterClient.isValid && !iframe){
         <p style="margin-left:80px; font-size:30px; color: rgb(131,131,131)">avec</p>
         <a href="@routes.Application.twitterLogin()">
             <img style="margin-left: 200px;" src="assets/images/twitter-home.png">
