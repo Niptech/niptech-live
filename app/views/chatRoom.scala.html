@@ -21,6 +21,8 @@
 @fbLink() = @{configuration.getString("link.facebook").getOrElse("")}
 @gplusLink() = @{configuration.getString("link.googleplus").getOrElse("")}
 
+@widthChat() = @{ if (iframe) "44.5" else "34"  }
+
 
 @main(Some(username), iframe) {
 
@@ -58,7 +60,7 @@
             </div>
             <div style="height:70px;background-color:white;border-bottom: 1px solid lightgray;"></div>
         </div>
-        <div class="span4" style="margin-left: 0px; margin-right: 0px; border-left: 1px solid lightgray; width: 44.5%">
+        <div class="span4" style="margin-left: 0px; margin-right: 0px; border-left: 1px solid lightgray; width: @widthChat%">
             <div style="height: 45px; background-color: white; border-bottom: 1px solid lightgray;">
                 <span class="nip-title">Chat</span>
                 <a class="nip-title-button pull-right" style="text-decoration: none; color: white;" ng-click="openChangeUsernameDlg()">
