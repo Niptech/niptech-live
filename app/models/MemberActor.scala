@@ -27,7 +27,7 @@ import akka.util.Timeout
 import akka.pattern.ask
 
 
-class Member(var userid: String, var username: String, var imageUrl: String) extends Actor {
+class Member(var userid: String, var username: String, var imageUrl: String, var ipAddr: String) extends Actor {
 
   val connectedTimeout = 90 minutes
   val disconnectedTimeout = 90 seconds
@@ -86,30 +86,42 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
     case Talk(text) => {
       connectedDeadline = connectedTimeout.fromNow
       disconnectedDeadline = disconnectedTimeout.fromNow
-      text match {
-        case save if text startsWith ("save:") =>
-          Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
-        case tirage if text startsWith ("tirage ") =>
-          val parms = tirage.split(" ")
-          val nbGagnants = Try(parms(1).toInt)
-          val preuve = parms(2)
-          nbGagnants.map(n => self ! Tirage(n, preuve))
-        case share if text startsWith ("shareOnTwitter:") =>
-          Logger.debug("Sharing on twitter: " + share.takeRight(share.size - 15))
-          Cache.getAs[Twitter](username).foreach(t => t.updateStatus(share.takeRight(share.size - 15).take(140)))
-        case changeuser if text startsWith ("nickname:") =>
-          self ! ChangeName(text.takeRight(text.size - 9), None)
+      val bannedIPs = Cache.getOrElse[List[String]]("bannedIPs")(List())
+      if (!bannedIPs.contains(ipAddr)) {
+        text match {
+          case save if text startsWith ("save:") =>
+            Cache.getAs[Twitter](username).foreach(t => t.sendDirectMessage(username, text.takeRight(text.size - 5).take(140)))
+          case tirage if text startsWith ("tirage ") =>
+            val parms = tirage.split(" ")
+            val nbGagnants = Try(parms(1).toInt)
+            val preuve = parms(2)
+            nbGagnants.map(n => self ! Tirage(n, preuve))
+          case share if text startsWith ("shareOnTwitter:") =>
+            Logger.debug("Sharing on twitter: " + share.takeRight(share.size - 15))
+            Cache.getAs[Twitter](username).foreach(t => t.updateStatus(share.takeRight(share.size - 15).take(140)))
+          case changeuser if text startsWith ("nickname:") =>
+            self ! ChangeName(text.takeRight(text.size - 9), None)
+          case ban if text startsWith ("/ban ") =>
+            val moderator = Cache.getOrElse[String]("moderator")("")
+            if (username == moderator) {
+              val bannedName = text drop 5
+              Logger.info(bannedName + "est banni de la ChatRoom")
+              Akka.system.eventStream.publish(BanFromChatroom(bannedName))
+            }
 
-        case _ =>
-          notifyAll("talk", text)
-          if (Cache.getOrElse[Boolean]("twitterBroadcast")(false) && TwitterClient.isValid)
-            try {
-              TwitterClient.twitter.updateStatus((username + " - " + text).take(140))
-            }
-            catch {
-              case exc: Throwable => Logger.error(exc.getMessage)
-            }
+          case _ =>
+            notifyAll("talk", text)
+            if (Cache.getOrElse[Boolean]("twitterBroadcast")(false) && TwitterClient.isValid)
+              try {
+                TwitterClient.twitter.updateStatus((username + " - " + text).take(140))
+              }
+              catch {
+                case exc: Throwable => Logger.error(exc.getMessage)
+              }
+        }
       }
+      else
+        sendToSelfOnly("Vous êtes banni de la ChatRoom. Impossible de parler")
     }
 
     case GetUsername() => sender ! username
@@ -118,18 +130,9 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       val escapedNewname = xml.Utility.escape(newname)
       ChatRoom.members -= username
       ChatRoom.members += escapedNewname
-      // notifyAll("talk", username + " a changé son nom en " + newname)
-      val msg = JsObject(
-        Seq(
-          "kind" -> JsString("talk"),
-          "user" -> JsString(username),
-          "avatar" -> JsString(imageUrl),
-          "message" -> JsString("Vous avez changé votre nom en " + escapedNewname),
-          "members" -> JsArray(ChatRoom.members.map(JsString))))
-      self ! ChatMessage(msg)
+      sendToSelfOnly("Vous avez changé votre nom en " + escapedNewname)
       // Empty message to update the list of users
       notifyAll("talk", "")
-      Logger.info(username + " a changé son nom en " + newname)
       username = escapedNewname
       image.map(url => imageUrl = url)
 
@@ -164,15 +167,22 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
       }
 
     case Quit() =>
-      Logger.debug(username + " quitte la chatroom")
       ChatRoom.members -= username
       ChatRoom.membersActorsId -= userid
       Cache.remove(userid)
       //notifyAll("talk", username + " a quitté la ChatRoom")
       // Empty message to update the list of users
       notifyAll("talk", "")
+      Akka.system.eventStream.unsubscribe(self, classOf[BanFromChatroom])
       Akka.system.eventStream.unsubscribe(self, classOf[ChatMessage])
       Akka.system.stop(self)
+
+    case BanFromChatroom(bannedName: String) =>
+      if (bannedName == username) {
+        val bannedIPs = Cache.getOrElse[List[String]]("bannedIPs")(List())
+        Cache.set("bannedIPs", ipAddr :: bannedIPs)
+        sendToSelfOnly("//BANNI//")
+      }
 
   }
 
@@ -186,9 +196,21 @@ class Member(var userid: String, var username: String, var imageUrl: String) ext
         "members" -> JsArray(ChatRoom.members.map(JsString))))
     Akka.system.eventStream.publish(ChatMessage(msg))
   }
+
+  def sendToSelfOnly(message: String) {
+    val msg = JsObject(
+      Seq(
+        "kind" -> JsString("talk"),
+        "user" -> JsString(username),
+        "avatar" -> JsString(imageUrl),
+        "message" -> JsString(message),
+        "members" -> JsArray(ChatRoom.members.map(JsString))))
+    self ! ChatMessage(msg)
+  }
+
 }
 
-class Robot(username: String) extends Member(username, username, "") {
+class Robot(username: String) extends Member(username, username, "", "127.0.0.1") {
 
   def quotes = ConfigFactory.load("niptechquotes").getStringList("quotes")
 
@@ -202,7 +224,7 @@ class Robot(username: String) extends Member(username, username, "") {
 
 }
 
-class TwitterMember extends Member("Twitter", "Twitter", "") {
+class TwitterMember extends Member("Twitter", "Twitter", "", "127.0.0.1") {
   override def receive = {
     case Tweet(status) => {
       notifyAll("talk", "@" + status.getUser().getScreenName() + " - " + status.getText())
@@ -237,5 +259,7 @@ case class Connected(enumerator: Enumerator[JsValue])
 case class CannotConnect(msg: String)
 
 case class Tirage(nbGagnants: Int, preuve: String)
+
+case class BanFromChatroom(username: String)
 
 

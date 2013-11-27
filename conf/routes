@@ -11,7 +11,7 @@ GET         /username/:userid                 controllers.Application.getUsernam
 
 
 GET         /admin                            controllers.Application.admin
-GET         /configure                        controllers.Application.configure(stylesheet: Option[String] ?= None, episodeNb: Option[String] ?= None, onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None)
+GET         /configure                        controllers.Application.configure(stylesheet: Option[String] ?= None, episodeNb: Option[String] ?= None, onairswitch: Option[String] ?= None, youtubeid: Option[String] ?= None, twitterstreamswitch: Option[String] ?= None, moderator: Option[String] ?= None)
 
 GET         /login                            controllers.Application.login
 POST        /login                            controllers.Application.doLogin

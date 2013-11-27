@@ -47,13 +47,14 @@ object ChatRoom {
 
   }
 
-  def join(userid: String) = {
+  def join(userid: String, ipAddr: String) = {
     var username = newUserid
     members += username
     membersActorsId += userid
     Logger.info(members.size.toString + " membre connectés")
-    val memberActor = Akka.system.actorOf(Props(new Member(userid, username, "")), userid)
-    val r = Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
+    val memberActor = Akka.system.actorOf(Props(new Member(userid, username, "", ipAddr)), userid)
+    Akka.system.eventStream.subscribe(memberActor, classOf[ChatMessage])
+    Akka.system.eventStream.subscribe(memberActor, classOf[BanFromChatroom])
     Akka.system.scheduler.schedule(
       30 seconds,
       30 seconds,

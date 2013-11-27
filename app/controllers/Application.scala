@@ -45,7 +45,7 @@ object Application extends Controller {
     Ok(views.html.changeUsername(frame))
   }
 
-  def configure(stylesheet: Option[String], episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String]) = Action {
+  def configure(stylesheet: Option[String], episodeNb: Option[String], onairswitch: Option[String], youtubeid: Option[String], twitterstreamswitch: Option[String], moderator: Option[String]) = Action {
     implicit request =>
       stylesheet foreach {
         id => Cache.set("stylesheet", id)
@@ -55,6 +55,9 @@ object Application extends Controller {
       }
       youtubeid foreach {
         id => Cache.set("youtubeid", id)
+      }
+      moderator foreach {
+        id => Cache.set("moderator", id)
       }
       if (twitterstreamswitch.getOrElse("off") == "on")
         Cache.set("twitterBroadcast", true)
@@ -71,7 +74,7 @@ object Application extends Controller {
     implicit request =>
       val userid = request.session.get("userid").getOrElse(newUserid)
       if (Akka.system.actorFor("/user/" + userid).isTerminated)
-        ChatRoom.join(userid)
+        ChatRoom.join(userid, request.remoteAddress)
       val frame = configuration.getBoolean("frame").getOrElse(false)
       Ok(views.html.chatRoom(userid, "", frame)) withSession ("userid" -> userid)
   }

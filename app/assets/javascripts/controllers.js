@@ -50,6 +50,8 @@ angular.module('liveChat.controllers', []).
             data.time = now.getHours() + ':' + min;
             if (data.user == "GAGNANT")
                 alert("Tu es GAGNANT. Le mot à donner comme preuve: " + data.message)
+            if (data.message == "//BANNI//")
+                alert("Tu es banni de la chatroom")
             else if (data.message != "") {
             	$scope.messages.push(data);
             }
