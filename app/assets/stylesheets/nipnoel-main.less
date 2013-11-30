@@ -1,0 +1,35 @@
+@theme-color: red;
+@emission: nipnoel;
+
+@import "_nipcommon-main";
+
+div#live-logo {
+  background-image: url("/assets/images/@{emission}/@{emission}-logo.png");
+  background-repeat: no-repeat;
+  width: 500px;
+  height: 100px;
+  display: inline-block;
+  padding: 0;
+}
+
+html, body {
+  background-color: #fff;
+  color: @theme-color;
+  background-image: url('/assets/images/nipnoel/flocon.png');
+}
+
+#message-list {
+  background-image: url('/assets/images/nipnoel/flocon.png');
+}
+
+#members-list {
+  background-color: transparent;
+}
+
+.message {
+  background-color: rgb(247, 247, 247); opacity: 0.8;
+}
+
+.nip-bg {
+  background-image: url('/assets/images/nipnoel/flocon.png');
+}
