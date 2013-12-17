@@ -8,11 +8,11 @@ angular.module('liveChat.controllers', []).
         $scope.users = [];
         $scope.currentMessage = "";
         $scope.currentUser ="";
+        $scope.shouldScroll = true;
 
 
         $scope.connect = function (username) {
             var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket;
-          //  $scope.chatSocket = new WS("ws://localhost:9000/room/chat/" + username);
 
          var url = jsRoutes.controllers.Application.chat(username).absoluteURL().replace("http://","ws://")
          $scope.chatSocket = new WS(url);

@@ -40,7 +40,8 @@ angular.module('liveChat').directive('scrollGlue', function () {
             }
 
             function shouldActivateAutoScroll() {
-                return el.scrollTop + el.clientHeight == el.scrollHeight;
+         //       return el.scrollTop + el.clientHeight == el.scrollHeight;
+                return scope.shouldScroll;
             }
 
             scope.$watch(function () {
@@ -49,9 +50,9 @@ angular.module('liveChat').directive('scrollGlue', function () {
                 }
             });
 
-     /*       $el.bind('scroll', function () {
+            $el.bind('scroll', function () {
                 scope.$apply(ngModel.$setViewValue.bind(ngModel, shouldActivateAutoScroll()));
-            });   */
+            });
         }
     };
 });
