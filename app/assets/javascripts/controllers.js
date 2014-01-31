@@ -2,23 +2,25 @@
 
 /** Controllers */
 angular.module('liveChat.controllers', []).
-    controller('ChatCtrl', function ($scope, $dialog, $http) {
+    controller('ChatCtrl', function ($scope, $dialog, $http, $upload) {
         $scope.messages = [];
         $scope.inputText = "";
         $scope.users = [];
         $scope.currentMessage = "";
-        $scope.currentUser ="";
+        $scope.username = "";
+        $scope.currentUser = "";
         $scope.shouldScroll = true;
 
 
         $scope.connect = function (username) {
             var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket;
+            $scope.username = username;
 
-         var url = jsRoutes.controllers.Application.chat(username).absoluteURL().replace("http://","ws://")
-         $scope.chatSocket = new WS(url);
+            var url = jsRoutes.controllers.Application.chat(username).absoluteURL().replace("http://", "ws://")
+            $scope.chatSocket = new WS(url);
             $scope.chatSocket.onmessage = $scope.receiveEvent;
 
-            $http.get('/username/' + username).success(function(data, status, headers, config) {
+            $http.get('/username/' + username).success(function (data, status, headers, config) {
                 $scope.currentUser = data;
             });
         };
@@ -53,7 +55,7 @@ angular.module('liveChat.controllers', []).
             if (data.message == "//BANNI//")
                 alert("Tu es banni de la chatroom")
             else if (data.message != "") {
-            	$scope.messages.push(data);
+                $scope.messages.push(data);
             }
             $scope.users = data.members;
             $scope.$apply();
@@ -85,7 +87,7 @@ angular.module('liveChat.controllers', []).
             }
         }
 
-        $scope.setUserStyle = function(username) {
+        $scope.setUserStyle = function (username) {
             if (username == $scope.currentUser) {
                 return "{color : 'blue';}";
             } else {
@@ -112,6 +114,27 @@ angular.module('liveChat.controllers', []).
             });
         }
 
+        $scope.onFileDrop = function ($files) {
+            for (var i = 0; i < $files.length; i++) {
+                var file = $files[i];
+                if (file.type.indexOf("image") == 0) {
+                    $scope.upload = $upload.upload({
+                        url: '/upload', //upload.php script, node.js route, or servlet url
+                        // method: POST or PUT,
+                        headers: {'username': $scope.username},
+                        // withCredential: true,
+                        // data: {myObj: $scope.myModelObj},
+                        file: file
+                    }).progress(function (evt) {
+                        console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                    }).success(function (data, status, headers, config) {
+                        // file is uploaded successfully
+                    });
+                } else
+                    alert("Vous ne pouvez déposer que des images");
+            }
+        }
+
         var myname = '';
 
 
@@ -119,7 +142,7 @@ angular.module('liveChat.controllers', []).
 
 
 function ChangeNameDlgCtrl($scope, dialog) {
-    $scope.close = function(result) {
+    $scope.close = function (result) {
         dialog.close(result);
     };
 }

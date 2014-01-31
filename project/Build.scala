@@ -12,6 +12,7 @@ object ApplicationBuild extends Build {
     "org.twitter4j" % "twitter4j-core" % "3.0.4-SNAPSHOT",
     "org.twitter4j" % "twitter4j-stream" % "3.0.4-SNAPSHOT",
     "org.webjars" %% "webjars-play" % "2.1.0-2",
+    "org.webjars" % "angular-file-upload" % "1.2.5",
     "org.webjars" % "angularjs" % "1.1.5-1",
     "org.webjars" % "bootstrap" % "2.3.2",
     "org.webjars" % "angular-ui-bootstrap" % "0.5.0",

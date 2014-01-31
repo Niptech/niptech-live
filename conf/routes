@@ -17,6 +17,8 @@ GET         /login                            controllers.Application.login
 POST        /login                            controllers.Application.doLogin
 GET         /logout                           controllers.Application.doLogout
 
+POST        /upload                           controllers.Application.upload
+GET         /file/:name                       controllers.Application.getFile(name: String)
 
 GET         /changeuser                       controllers.Application.changeUserDialog
 

@@ -23,6 +23,7 @@ import twitter4j.auth.RequestToken
 import scala.util.Random
 import play.api.{Routes, Logger}
 import akka.util.Timeout
+import java.io.File
 
 
 case class TwitterStore(twitter: Twitter, requestToken: RequestToken)
@@ -39,6 +40,40 @@ object Application extends Controller {
       Ok(views.html.admin())
     }
   }
+
+  /*def upload = Action(parse.temporaryFile) { request =>
+    request.body.moveTo(new File("/tmp/picture"))
+    Ok("File uploaded")
+  }     */
+
+  def upload = Action(parse.multipartFormData) {
+    request =>
+      request.body.files.map {
+        picture =>
+          import java.io.File
+          val filename = picture.filename
+          val contentType = picture.contentType
+          picture.ref.moveTo(new File("/tmp/" + filename), true)
+          request.session.get("userid").map {
+            userid =>
+              val memberActor = Akka.system.actorFor("/user/" + userid)
+              memberActor ! FileSent(filename)
+          }
+      }
+      Ok("File uploaded")
+  }
+
+  def getFile(name: String) = Action {
+    try {
+      Ok.sendFile(
+        content = new java.io.File("/tmp/" + name),
+        inline = true
+      )
+    } catch {
+      case e: Exception => NotFound("File not found")
+    }
+  }
+
 
   def changeUserDialog = Action {
     val frame = configuration.getBoolean("frame").getOrElse(false)

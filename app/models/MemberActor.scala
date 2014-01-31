@@ -140,6 +140,9 @@ class Member(var userid: String, var username: String, var imageUrl: String, var
       Logger.debug(username + " - Reçu : " + msg.toString)
       chatChannel.push(msg)
 
+    case FileSent(name: String) =>
+      notifyAll("file", name)
+
     case Tirage(nbGagnants: Int, preuve: String) =>
       val winners = Random.shuffle(ChatRoom.membersActorsId.filter(id => id != userid)).take(nbGagnants)
       val liste = winners.map {
@@ -257,6 +260,8 @@ case class ChangeName(newName: String, imageUrl: Option[String])
 case class Connected(enumerator: Enumerator[JsValue])
 
 case class CannotConnect(msg: String)
+
+case class FileSent(name: String)
 
 case class Tirage(nbGagnants: Int, preuve: String)
 
