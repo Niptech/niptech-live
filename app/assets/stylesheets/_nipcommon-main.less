@@ -343,11 +343,30 @@ div#live-logo {
   padding: 0;
 }
 
+div#live-banner {
+  height: 50px;
+  margin-bottom: 20px;
+  background-color: @theme-color;
+  color: white;
+  font-size: 30px;
+  text-align: center;
+  line-height: 1.2em;
+}
+
 /* Bandeau tout en haut de la page */
 div#nip-border-top {
   width: 100%;
   height: 10px;
   background-color: @theme-color;
+}
+
+div#live-hashtags {
+  height: 30px;
+  background-color: @theme-color;
+  text-align: center;
+  color: white;
+  font-size: 20px;
+  line-height: 1.3em;
 }
 
 /* Titre de la page */
@@ -412,7 +431,6 @@ div#niptech-bg-avatar {
   margin-left: 10px;
 }
 
-
 .nip-title-button {
   font-size: 12px;
   font-weight: lighter;
@@ -433,7 +451,7 @@ div#niptech-bg-avatar {
 #deco-button {
   color: @theme-color;
   font-size: 20px;
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 .footer-links {
@@ -443,15 +461,15 @@ div#niptech-bg-avatar {
 }
 
 #twitterShare a:hover {
-      text-decoration: none;
+  text-decoration: none;
 }
 
 .nip-bg {
   background-image: url('/assets/images/bg-niptech.png');
 }
 
-.twtr-nt{
-  content:url("/assets/images/@{emission}/twtr-nt-@{emission}.png");
+.twtr-nt {
+  content: url("/assets/images/@{emission}/twtr-nt-@{emission}.png");
 }
 
 .fb-nt {
